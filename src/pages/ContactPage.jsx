@@ -3,9 +3,19 @@ import { Mail, Code2, Link2, Send, Globe, MessageCircle, ExternalLink } from 'lu
 import StaticPageLayout, { StaticCard, StaticSectionTitle } from '../components/StaticPageLayout';
 
 const LINKS = [
-  { icon: Code2, label: 'GitHub', href: 'https://github.com/daveasd86' },
+  {
+    icon: Code2,
+    label: 'GitHub',
+    href: 'https://github.com/daveasd86',
+    handle: 'github.com/daveasd86',
+  },
   { icon: Link2, label: 'LinkedIn', comingSoon: true },
-  { icon: MessageCircle, label: 'Telegram', href: 'https://t.me/feodc' },
+  {
+    icon: MessageCircle,
+    label: 'Telegram',
+    href: 'https://t.me/feodc',
+    handle: 't.me/feodc',
+  },
   { icon: Globe, label: 'Portfolio', comingSoon: true },
 ];
 
@@ -44,24 +54,36 @@ export default function ContactPage({ onNavigate }) {
       <StaticCard>
         <StaticSectionTitle>Links</StaticSectionTitle>
         <ul className="space-y-2">
-          {LINKS.map(({ icon: Icon, label, href, comingSoon }) => (
+          {LINKS.map(({ icon: Icon, label, href, handle, comingSoon }) => (
             <li key={label}>
               {comingSoon ? (
                 <div className={`${rowClass} text-gray-500`}>
-                  <Icon className="h-5 w-5 text-brand-gold/60" />
-                  <span className="font-medium">{label}</span>
-                  <span className="ml-auto text-xs text-gray-600">Coming soon</span>
+                  <Icon className="h-5 w-5 shrink-0 text-brand-gold/60" />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-gray-400">{label}</span>
+                    <p className="text-xs text-gray-600 mt-0.5">Coming soon</p>
+                  </div>
                 </div>
               ) : (
                 <a
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${rowClass} text-gray-300 hover:border-brand-gold/40 hover:text-brand-gold`}
+                  className={`${rowClass} text-gray-300 hover:border-brand-gold/40 group`}
                 >
-                  <Icon className="h-5 w-5 text-brand-gold" />
-                  <span className="font-medium">{label}</span>
-                  <ExternalLink className="ml-auto h-4 w-4 text-gray-600" aria-hidden />
+                  <Icon className="h-5 w-5 shrink-0 text-brand-gold" />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-white group-hover:text-brand-gold transition-colors">
+                      {label}
+                    </span>
+                    <p className="text-sm text-brand-gold/90 truncate group-hover:text-brand-gold transition-colors">
+                      {handle}
+                    </p>
+                  </div>
+                  <ExternalLink
+                    className="shrink-0 h-4 w-4 text-gray-600 group-hover:text-brand-gold transition-colors"
+                    aria-hidden
+                  />
                 </a>
               )}
             </li>
