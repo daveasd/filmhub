@@ -1,13 +1,16 @@
 import React from 'react';
-import { Mail, Code2, Link2, Send, Globe, MessageCircle } from 'lucide-react';
+import { Mail, Code2, Link2, Send, Globe, MessageCircle, ExternalLink } from 'lucide-react';
 import StaticPageLayout, { StaticCard, StaticSectionTitle } from '../components/StaticPageLayout';
 
 const LINKS = [
-  { icon: Code2, label: 'GitHub', href: '#', placeholder: true },
-  { icon: Link2, label: 'LinkedIn', href: '#', placeholder: true },
-  { icon: MessageCircle, label: 'Telegram', href: '#', placeholder: true },
-  { icon: Globe, label: 'Portfolio', href: '#', placeholder: true },
+  { icon: Code2, label: 'GitHub', href: 'https://github.com/daveasd86' },
+  { icon: Link2, label: 'LinkedIn', comingSoon: true },
+  { icon: MessageCircle, label: 'Telegram', href: 'https://t.me/feodc' },
+  { icon: Globe, label: 'Portfolio', comingSoon: true },
 ];
+
+const rowClass =
+  'flex items-center gap-3 rounded-lg border border-dark-border bg-dark-bg/50 px-4 py-3 transition-colors';
 
 export default function ContactPage({ onNavigate }) {
   return (
@@ -40,21 +43,27 @@ export default function ContactPage({ onNavigate }) {
 
       <StaticCard>
         <StaticSectionTitle>Links</StaticSectionTitle>
-        <p className="text-gray-500 text-xs mb-4">
-          Placeholder links — update with your live profiles before deployment.
-        </p>
         <ul className="space-y-2">
-          {LINKS.map(({ icon: Icon, label, href }) => (
+          {LINKS.map(({ icon: Icon, label, href, comingSoon }) => (
             <li key={label}>
-              <a
-                href={href}
-                className="flex items-center gap-3 rounded-lg border border-dark-border bg-dark-bg/50 px-4 py-3 text-gray-300 hover:border-brand-gold/40 hover:text-brand-gold transition-colors"
-                onClick={(e) => href === '#' && e.preventDefault()}
-              >
-                <Icon className="h-5 w-5 text-brand-gold" />
-                <span className="font-medium">{label}</span>
-                <span className="ml-auto text-xs text-gray-600">Coming soon</span>
-              </a>
+              {comingSoon ? (
+                <div className={`${rowClass} text-gray-500`}>
+                  <Icon className="h-5 w-5 text-brand-gold/60" />
+                  <span className="font-medium">{label}</span>
+                  <span className="ml-auto text-xs text-gray-600">Coming soon</span>
+                </div>
+              ) : (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${rowClass} text-gray-300 hover:border-brand-gold/40 hover:text-brand-gold`}
+                >
+                  <Icon className="h-5 w-5 text-brand-gold" />
+                  <span className="font-medium">{label}</span>
+                  <ExternalLink className="ml-auto h-4 w-4 text-gray-600" aria-hidden />
+                </a>
+              )}
             </li>
           ))}
         </ul>
