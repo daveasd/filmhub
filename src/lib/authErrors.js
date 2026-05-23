@@ -1,4 +1,4 @@
-/**
+/*
  * Maps Supabase auth errors to user-friendly messages.
  */
 export function mapAuthError(error) {
@@ -7,12 +7,15 @@ export function mapAuthError(error) {
   const msg = String(error.message ?? error.error_description ?? '').toLowerCase()
   const code = String(error.code ?? error.status ?? '').toLowerCase()
 
+  // Email confirmation is disabled in this app.
+  // If Supabase still returns this for an old unconfirmed account,
+  // show a simple message instead of telling user to confirm email.
   if (
     msg.includes('email not confirmed') ||
     code === 'email_not_confirmed' ||
     msg.includes('email confirmation')
   ) {
-    return 'Please confirm your email before signing in. Check your inbox or spam folder.'
+    return 'This account was created before email confirmation was disabled. Please create a new account or contact support.'
   }
 
   if (
@@ -31,7 +34,7 @@ export function mapAuthError(error) {
     (msg.includes('password') && msg.includes('weak'))
   ) {
     if (msg.includes('6')) {
-      return 'Password is too weak. Use at least 6 characters (we recommend 8+ with letters and numbers).'
+      return 'Password is too weak. Use at least 6 characters. We recommend 8+ with letters and numbers.'
     }
     return 'Password is too weak. Use at least 8 characters with letters and numbers.'
   }
@@ -67,7 +70,11 @@ export function mapAuthError(error) {
     return 'Sign up is currently disabled. Please try again later.'
   }
 
-  if (msg.includes('rate limit') || msg.includes('too many requests')) {
+  if (
+    msg.includes('rate limit') ||
+    msg.includes('too many requests') ||
+    msg.includes('too many attempts')
+  ) {
     return 'Too many attempts. Please wait a moment and try again.'
   }
 
@@ -82,19 +89,26 @@ export function validatePassword(password) {
   if (!password || password.length < 8) {
     return 'Password must be at least 8 characters.'
   }
+
   if (!/[a-zA-Z]/.test(password)) {
     return 'Password must include at least one letter.'
   }
+
   if (!/[0-9]/.test(password)) {
     return 'Password must include at least one number.'
   }
+
   return null
 }
 
-/** @param {import('@supabase/supabase-js').User | null | undefined} user */
+/**
+ * Email confirmation is disabled for this app.
+ * Always return true so the frontend does not block login.
+ *
+ * @param {import('@supabase/supabase-js').User | null | undefined} user
+ */
 export function isEmailConfirmed(user) {
-  if (!user) return false
-  return Boolean(user.email_confirmed_at ?? user.confirmed_at)
+  return true
 }
 
 export function getAuthRedirectUrl() {
