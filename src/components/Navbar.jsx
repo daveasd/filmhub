@@ -47,8 +47,8 @@ export default function Navbar({ currentPage, setCurrentPage, onOpenAuth }) {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-gold to-brand-red shadow-lg shadow-brand-red/20">
               <Film className="h-5 w-5 text-black font-bold" />
             </div>
-            <span className="text-xl font-bold tracking-wider text-white">
-              FILM<span className="text-brand-gold">HUB</span>
+            <span className="text-xl font-bold tracking-wide text-white">
+              Dave&apos;s <span className="text-brand-gold">FilmHub</span>
             </span>
           </button>
 

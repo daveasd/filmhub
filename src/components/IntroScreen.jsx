@@ -58,15 +58,15 @@ export default function IntroScreen({ onLogin, onGuest, onSkip }) {
           <div className="intro-logo-icon flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-gold to-brand-red shadow-2xl shadow-brand-red/30">
             <Film className="h-8 w-8 sm:h-10 sm:w-10 text-black" strokeWidth={2.5} />
           </div>
-          <p className="mt-4 text-sm font-bold tracking-[0.35em] text-brand-gold/90 uppercase">
-            FilmHub
+          <p className="mt-4 text-sm font-bold tracking-[0.2em] text-brand-gold/90 uppercase">
+            Dave&apos;s FilmHub
           </p>
         </div>
 
         {/* Headline */}
         <h1 className="intro-title text-2xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
           Hello, welcome to{' '}
-          <span className="text-brand-gold text-glow">Dawit&apos;s FilmHub Review</span>
+          <span className="text-brand-gold text-glow">Dave&apos;s FilmHub</span>
         </h1>
 
         <p className="intro-subtitle mt-5 text-sm sm:text-base text-gray-400 max-w-lg mx-auto leading-relaxed px-2">
@@ -78,7 +78,7 @@ export default function IntroScreen({ onLogin, onGuest, onSkip }) {
           <button
             type="button"
             onClick={onLogin}
-            className="intro-btn-primary group inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gold text-black font-bold text-sm sm:text-base px-6 py-3.5 min-h-[48px] shadow-lg shadow-brand-gold/20 hover:brightness-110 transition-all"
+            className="intro-btn-primary filmhub-btn-glow group inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gold text-black font-bold text-sm sm:text-base px-6 py-3.5 min-h-[48px] shadow-lg shadow-brand-gold/20 hover:brightness-110 transition-all"
           >
             <LogIn className="h-5 w-5" />
             Continue to Login
@@ -87,7 +87,7 @@ export default function IntroScreen({ onLogin, onGuest, onSkip }) {
           <button
             type="button"
             onClick={onGuest}
-            className="intro-btn-secondary inline-flex items-center justify-center gap-2 rounded-xl border border-dark-border bg-dark-card/80 text-white font-semibold text-sm sm:text-base px-6 py-3.5 min-h-[48px] hover:border-brand-gold/50 hover:text-brand-gold transition-all backdrop-blur-sm"
+            className="intro-btn-secondary filmhub-btn-glow filmhub-btn-glow-secondary inline-flex items-center justify-center gap-2 rounded-xl border border-dark-border bg-dark-card/80 text-white font-semibold text-sm sm:text-base px-6 py-3.5 min-h-[48px] hover:border-brand-gold/50 hover:text-brand-gold transition-all backdrop-blur-sm"
           >
             <UserRound className="h-5 w-5" />
             Continue as Guest

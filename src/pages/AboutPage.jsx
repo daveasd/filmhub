@@ -38,13 +38,13 @@ const FEATURES = [
 export default function AboutPage({ onNavigate }) {
   return (
     <StaticPageLayout
-      title="About FilmHub"
+      title="About Dave's FilmHub"
       subtitle="A modern movie discovery and tracking platform built for film lovers and portfolio demonstration."
       icon={Film}
     >
       <StaticCard>
         <p className="text-gray-300 leading-relaxed">
-          FilmHub helps you discover films, manage your watchlist, track what you have watched,
+          Dave&apos;s FilmHub helps you discover films, manage your watchlist, track what you have watched,
           write reviews, and get AI-powered recommendations — all in a dark, cinematic interface
           designed for focus and clarity.
         </p>

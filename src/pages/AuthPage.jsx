@@ -82,8 +82,8 @@ export default function AuthPage({ onLoginSuccess, onContinueAsGuest }) {
           <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-brand-gold to-brand-red shadow-xl shadow-brand-red/20 mb-3">
             <Film className="h-7 w-7 text-black font-bold animate-pulse" />
           </div>
-          <h2 className="text-3xl font-extrabold text-white tracking-wider">
-            FILM<span className="text-brand-gold">HUB</span>
+          <h2 className="text-3xl font-extrabold text-white tracking-wide">
+            Dave&apos;s <span className="text-brand-gold">FilmHub</span>
           </h2>
           <p className="text-gray-400 text-sm mt-1">Discover, track, and review your favorite cinema</p>
         </div>

@@ -104,7 +104,7 @@ export default function AuthModal({ isOpen, onClose }) {
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
           <div className="flex items-center gap-2">
             <Film className="text-rose-500" size={20} />
-            <span className="text-white font-bold text-lg tracking-tight">FilmHub</span>
+            <span className="text-white font-bold text-lg tracking-tight">Dave&apos;s FilmHub</span>
           </div>
           <button
             onClick={onClose}

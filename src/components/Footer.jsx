@@ -50,8 +50,8 @@ export default function Footer({ currentPage, onNavigate }) {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-gold to-brand-red shadow-lg shadow-brand-red/10">
                 <Film className="h-4 w-4 text-black" />
               </div>
-              <span className="text-lg font-bold tracking-wider text-white group-hover:text-brand-gold transition-colors">
-                FILM<span className="text-brand-gold">HUB</span>
+              <span className="text-lg font-bold tracking-wide text-white group-hover:text-brand-gold transition-colors">
+                Dave&apos;s <span className="text-brand-gold">FilmHub</span>
               </span>
             </button>
             <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
@@ -107,7 +107,7 @@ export default function Footer({ currentPage, onNavigate }) {
 
         <div className="mt-8 pt-6 border-t border-dark-border space-y-2 text-center md:text-left">
           <p className="text-xs text-gray-500">
-            &copy; {year} FilmHub. All rights reserved.
+            &copy; {year} Dave&apos;s FilmHub. All rights reserved.
           </p>
           <p className="text-[11px] text-gray-600 max-w-3xl leading-relaxed">
             This product uses the TMDB API but is not endorsed or certified by TMDB.

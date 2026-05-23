@@ -24,6 +24,7 @@ import { useToast } from './contexts/ToastContext';
 import QuickViewModal from './components/QuickViewModal';
 import FloatingAiButton from './components/ai/FloatingAiButton';
 import IntroScreen from './components/IntroScreen';
+import CursorGlow from './components/CursorGlow';
 import { X } from 'lucide-react';
 import { getMovieId, normalizeMovie, uniqueMoviesById } from './utils/movies';
 import {
@@ -494,17 +495,21 @@ export default function App() {
 
   if (showIntro) {
     return (
-      <IntroScreen
-        onLogin={handleIntroLogin}
-        onGuest={handleIntroGuest}
-        onSkip={handleIntroSkip}
-      />
+      <>
+        <CursorGlow />
+        <IntroScreen
+          onLogin={handleIntroLogin}
+          onGuest={handleIntroGuest}
+          onSkip={handleIntroSkip}
+        />
+      </>
     );
   }
 
   if (!user) {
     return (
       <>
+        <CursorGlow />
         <div className="fixed inset-0 bg-[#060608]" />
         <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
       </>
@@ -513,6 +518,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-dark-bg text-gray-100 selection:bg-brand-gold selection:text-black">
+      <CursorGlow />
       {/* Top Navigation */}
       <Navbar
         currentPage={currentPage}

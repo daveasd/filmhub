@@ -36,9 +36,9 @@ export default function MovieCard({
     (genre_ids?.length ? [] : []);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl bg-dark-card border border-dark-border transition-all duration-300 hover:-translate-y-2 hover:border-brand-gold/50 hover:shadow-xl hover:shadow-brand-gold/10">
+    <div className="movie-card-cinematic group relative flex flex-col overflow-hidden rounded-xl bg-dark-card border border-dark-border">
       <div
-        className="aspect-[2/3] w-full overflow-hidden bg-dark-hover cursor-pointer relative"
+        className="movie-card-poster aspect-[2/3] w-full overflow-hidden bg-dark-hover cursor-pointer relative"
         onClick={() => onCardClick(id)}
       >
         {!imgLoaded && (
