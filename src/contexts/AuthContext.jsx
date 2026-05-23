@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
 import {
   mapAuthError,
-  isEmailConfirmed,
   getAuthRedirectUrl,
 } from '../lib/authErrors.js'
 
@@ -11,24 +10,22 @@ import {
 const AuthContext = createContext(null)
 
 async function clearUnconfirmedSession() {
-  if (!supabase) return
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session?.user && !isEmailConfirmed(session.user)) {
-    await supabase.auth.signOut()
-  }
+  // Email confirmation is disabled, so we do not clear sessions anymore.
+  return
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null)   // Supabase auth user object
-  const [profile, setProfile] = useState(null)   // row from `profiles` table
-  const [loading, setLoading] = useState(true)   // initial session check
-  const [isGuest, setIsGuest] = useState(false)  // guest mode flag
+  const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [isGuest, setIsGuest] = useState(false)
 
   // ── Fetch profile row ───────────────────────────────────────────────────────
   const fetchProfile = useCallback(async (userId) => {
     if (!supabase) return
+
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -41,13 +38,6 @@ export function AuthProvider({ children }) {
   const applySession = useCallback(
     async (session) => {
       if (!session?.user) {
-        setUser(null)
-        setProfile(null)
-        return
-      }
-
-      if (!isEmailConfirmed(session.user)) {
-        await supabase.auth.signOut()
         setUser(null)
         setProfile(null)
         return
@@ -85,7 +75,11 @@ export function AuthProvider({ children }) {
   // ── Sign Up ─────────────────────────────────────────────────────────────────
   const signUp = useCallback(async ({ email, password, username }) => {
     if (!supabase) {
-      return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
+      return {
+        error: {
+          message: mapAuthError({ message: 'Supabase not configured' }),
+        },
+      }
     }
 
     const trimmedEmail = email.trim()
@@ -104,19 +98,17 @@ export function AuthProvider({ children }) {
     })
 
     if (error) {
-      return { error: { message: mapAuthError(error), raw: error } }
-    }
-
-    // Do not keep unconfirmed users signed in
-    if (data.session && data.user && !isEmailConfirmed(data.user)) {
-      await supabase.auth.signOut()
-    } else if (data.session && !data.user?.email_confirmed_at) {
-      await supabase.auth.signOut()
+      return {
+        error: {
+          message: mapAuthError(error),
+          raw: error,
+        },
+      }
     }
 
     return {
       data,
-      needsEmailConfirmation: Boolean(data.user && !isEmailConfirmed(data.user)),
+      needsEmailConfirmation: false,
       email: trimmedEmail,
     }
   }, [])
@@ -124,7 +116,11 @@ export function AuthProvider({ children }) {
   // ── Sign In ─────────────────────────────────────────────────────────────────
   const signIn = useCallback(async ({ email, password }) => {
     if (!supabase) {
-      return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
+      return {
+        error: {
+          message: mapAuthError({ message: 'Supabase not configured' }),
+        },
+      }
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -133,17 +129,11 @@ export function AuthProvider({ children }) {
     })
 
     if (error) {
-      return { data, error: { message: mapAuthError(error), raw: error } }
-    }
-
-    if (data.user && !isEmailConfirmed(data.user)) {
-      await supabase.auth.signOut()
       return {
-        data: null,
+        data,
         error: {
-          message:
-            'Please confirm your email before signing in. Check your inbox or spam folder.',
-          code: 'email_not_confirmed',
+          message: mapAuthError(error),
+          raw: error,
         },
       }
     }
@@ -154,15 +144,23 @@ export function AuthProvider({ children }) {
   // ── Resend confirmation email ───────────────────────────────────────────────
   const resendConfirmationEmail = useCallback(async (email) => {
     if (!supabase) {
-      return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
+      return {
+        error: {
+          message: mapAuthError({ message: 'Supabase not configured' }),
+        },
+      }
     }
 
     const trimmedEmail = email?.trim()
-    if (!trimmedEmail) {
-      return { error: { message: 'Enter your email address first.' } }
-    }
 
-    const { error } = await supabase.auth.resend({
+    if (!trimmedEmail) {
+      return {
+        error: {
+          message: 'Enter your email address first.',
+        },
+      }
+    }
+ const { error } = await supabase.auth.resend({
       type: 'signup',
       email: trimmedEmail,
       options: {
@@ -171,7 +169,12 @@ export function AuthProvider({ children }) {
     })
 
     if (error) {
-      return { error: { message: mapAuthError(error), raw: error } }
+      return {
+        error: {
+          message: mapAuthError(error),
+          raw: error,
+        },
+      }
     }
 
     return { success: true }
@@ -181,10 +184,12 @@ export function AuthProvider({ children }) {
   const signOut = useCallback(async () => {
     sessionStorage.removeItem('filmhub_guest_session')
     localStorage.removeItem('filmhub_intro_seen')
+
     if (!supabase) {
       setIsGuest(false)
       return
     }
+
     await supabase.auth.signOut()
     setUser(null)
     setProfile(null)
@@ -201,7 +206,14 @@ export function AuthProvider({ children }) {
 
   // ── Update Profile ──────────────────────────────────────────────────────────
   const updateProfile = useCallback(async (updates) => {
-    if (!supabase || !user) return { error: { message: 'Not authenticated' } }
+    if (!supabase || !user) {
+      return {
+        error: {
+          message: 'Not authenticated',
+        },
+      }
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -210,16 +222,17 @@ export function AuthProvider({ children }) {
       .single()
 
     if (!error && data) setProfile(data)
+
     if (error) {
       return {
         data,
         error: {
-          message:
-            'Could not update your profile. Please try again.',
+          message: 'Could not update your profile. Please try again.',
           raw: error,
         },
       }
     }
+
     return { data, error }
   }, [user])
 
@@ -229,7 +242,7 @@ export function AuthProvider({ children }) {
     profile,
     loading,
     isGuest,
-    isLoggedIn: Boolean(user) && isEmailConfirmed(user),
+    isLoggedIn: Boolean(user),
     signUp,
     signIn,
     signOut,

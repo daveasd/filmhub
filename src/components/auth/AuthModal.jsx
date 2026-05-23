@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext.jsx'
 import { validatePassword } from '../../lib/authErrors.js'
 
 const SIGNUP_SUCCESS_MSG =
-  'Account created. Please check your email and confirm your account before signing in.'
+  'Account created. you can sign in now.'
 
 export default function AuthModal({ isOpen, onClose }) {
   const { signIn, signUp, continueAsGuest, resendConfirmationEmail } = useAuth()
