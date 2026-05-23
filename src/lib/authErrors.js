@@ -8,12 +8,20 @@ export function mapAuthError(error) {
   const code = String(error.code ?? error.status ?? '').toLowerCase()
 
   if (
+    msg.includes('email not confirmed') ||
+    code === 'email_not_confirmed' ||
+    msg.includes('email confirmation')
+  ) {
+    return 'Please confirm your email before signing in. Check your inbox or spam folder.'
+  }
+
+  if (
     msg.includes('database error saving new user') ||
     msg.includes('database error') ||
     msg.includes('handle_new_user') ||
-    msg.includes('profiles')
+    (msg.includes('profiles') && msg.includes('error'))
   ) {
-    return 'We could not finish setting up your account. Please try again in a moment.'
+    return 'We could not finish setting up your profile. Please try again in a moment or contact support.'
   }
 
   if (
@@ -22,6 +30,9 @@ export function mapAuthError(error) {
     msg.includes('password is too weak') ||
     (msg.includes('password') && msg.includes('weak'))
   ) {
+    if (msg.includes('6')) {
+      return 'Password is too weak. Use at least 6 characters (we recommend 8+ with letters and numbers).'
+    }
     return 'Password is too weak. Use at least 8 characters with letters and numbers.'
   }
 
@@ -46,13 +57,10 @@ export function mapAuthError(error) {
   if (
     msg.includes('invalid login credentials') ||
     msg.includes('invalid credentials') ||
-    msg.includes('wrong password')
+    msg.includes('wrong password') ||
+    code === 'invalid_credentials'
   ) {
-    return 'Incorrect email or password. Please try again.'
-  }
-
-  if (msg.includes('email not confirmed')) {
-    return 'Please confirm your email before signing in. Check your inbox.'
+    return 'Wrong email or password. Please try again.'
   }
 
   if (msg.includes('signup is disabled')) {
@@ -67,7 +75,7 @@ export function mapAuthError(error) {
     return 'Connection problem. Check your internet and try again.'
   }
 
-  return 'Something went wrong. Please try again.'
+  return error.message || 'Something went wrong. Please try again.'
 }
 
 export function validatePassword(password) {
@@ -81,4 +89,15 @@ export function validatePassword(password) {
     return 'Password must include at least one number.'
   }
   return null
+}
+
+/** @param {import('@supabase/supabase-js').User | null | undefined} user */
+export function isEmailConfirmed(user) {
+  if (!user) return false
+  return Boolean(user.email_confirmed_at ?? user.confirmed_at)
+}
+
+export function getAuthRedirectUrl() {
+  if (typeof window === 'undefined') return undefined
+  return window.location.origin
 }

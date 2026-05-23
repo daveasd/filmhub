@@ -1,10 +1,22 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
-import { mapAuthError } from '../lib/authErrors.js'
+import {
+  mapAuthError,
+  isEmailConfirmed,
+  getAuthRedirectUrl,
+} from '../lib/authErrors.js'
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext(null)
+
+async function clearUnconfirmedSession() {
+  if (!supabase) return
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user && !isEmailConfirmed(session.user)) {
+    await supabase.auth.signOut()
+  }
+}
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
@@ -26,39 +38,49 @@ export function AuthProvider({ children }) {
     if (!error && data) setProfile(data)
   }, [])
 
+  const applySession = useCallback(
+    async (session) => {
+      if (!session?.user) {
+        setUser(null)
+        setProfile(null)
+        return
+      }
+
+      if (!isEmailConfirmed(session.user)) {
+        await supabase.auth.signOut()
+        setUser(null)
+        setProfile(null)
+        return
+      }
+
+      setUser(session.user)
+      setIsGuest(false)
+      fetchProfile(session.user.id)
+    },
+    [fetchProfile],
+  )
+
   // ── Bootstrap: restore session on mount ────────────────────────────────────
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      // No Supabase → default to guest mode
       setIsGuest(true)
       setLoading(false)
       return
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser(session.user)
-        fetchProfile(session.user.id)
-      }
+      applySession(session)
       setLoading(false)
     })
 
-    // Listen for auth state changes (login / logout / token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) {
-          setUser(session.user)
-          setIsGuest(false)
-          fetchProfile(session.user.id)
-        } else {
-          setUser(null)
-          setProfile(null)
-        }
-      }
+      async (_event, session) => {
+        await applySession(session)
+      },
     )
 
     return () => subscription.unsubscribe()
-  }, [fetchProfile])
+  }, [applySession])
 
   // ── Sign Up ─────────────────────────────────────────────────────────────────
   const signUp = useCallback(async ({ email, password, username }) => {
@@ -66,11 +88,15 @@ export function AuthProvider({ children }) {
       return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
     }
 
+    const trimmedEmail = email.trim()
     const trimmedUsername = username?.trim()
+    const redirectTo = getAuthRedirectUrl()
+
     const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: trimmedEmail,
       password,
       options: {
+        emailRedirectTo: redirectTo,
         data: {
           username: trimmedUsername,
         },
@@ -81,7 +107,18 @@ export function AuthProvider({ children }) {
       return { error: { message: mapAuthError(error), raw: error } }
     }
 
-    return { data }
+    // Do not keep unconfirmed users signed in
+    if (data.session && data.user && !isEmailConfirmed(data.user)) {
+      await supabase.auth.signOut()
+    } else if (data.session && !data.user?.email_confirmed_at) {
+      await supabase.auth.signOut()
+    }
+
+    return {
+      data,
+      needsEmailConfirmation: Boolean(data.user && !isEmailConfirmed(data.user)),
+      email: trimmedEmail,
+    }
   }, [])
 
   // ── Sign In ─────────────────────────────────────────────────────────────────
@@ -89,14 +126,55 @@ export function AuthProvider({ children }) {
     if (!supabase) {
       return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
     }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     })
+
     if (error) {
       return { data, error: { message: mapAuthError(error), raw: error } }
     }
+
+    if (data.user && !isEmailConfirmed(data.user)) {
+      await supabase.auth.signOut()
+      return {
+        data: null,
+        error: {
+          message:
+            'Please confirm your email before signing in. Check your inbox or spam folder.',
+          code: 'email_not_confirmed',
+        },
+      }
+    }
+
     return { data, error: null }
+  }, [])
+
+  // ── Resend confirmation email ───────────────────────────────────────────────
+  const resendConfirmationEmail = useCallback(async (email) => {
+    if (!supabase) {
+      return { error: { message: mapAuthError({ message: 'Supabase not configured' }) } }
+    }
+
+    const trimmedEmail = email?.trim()
+    if (!trimmedEmail) {
+      return { error: { message: 'Enter your email address first.' } }
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: trimmedEmail,
+      options: {
+        emailRedirectTo: getAuthRedirectUrl(),
+      },
+    })
+
+    if (error) {
+      return { error: { message: mapAuthError(error), raw: error } }
+    }
+
+    return { success: true }
   }, [])
 
   // ── Sign Out ────────────────────────────────────────────────────────────────
@@ -132,22 +210,34 @@ export function AuthProvider({ children }) {
       .single()
 
     if (!error && data) setProfile(data)
+    if (error) {
+      return {
+        data,
+        error: {
+          message:
+            'Could not update your profile. Please try again.',
+          raw: error,
+        },
+      }
+    }
     return { data, error }
   }, [user])
 
   // ── Context value ───────────────────────────────────────────────────────────
   const value = {
-    user,          // Supabase auth user (null if guest or logged out)
-    profile,       // DB profile row
-    loading,       // true during initial session hydration
-    isGuest,       // true when browsing without an account
-    isLoggedIn: Boolean(user),
+    user,
+    profile,
+    loading,
+    isGuest,
+    isLoggedIn: Boolean(user) && isEmailConfirmed(user),
     signUp,
     signIn,
     signOut,
     continueAsGuest,
     updateProfile,
+    resendConfirmationEmail,
     refetchProfile: () => user && fetchProfile(user.id),
+    clearUnconfirmedSession,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
