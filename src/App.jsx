@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AuthModal from './components/auth/AuthModal';
@@ -33,6 +34,8 @@ import {
   hasGuestSession,
   setGuestSession,
 } from './utils/introStorage';
+import ScrollToTop from './components/ScrollToTop';
+import { ROUTES } from './lib/routes';
 
 function normalizeListItem(item) {
   return normalizeMovie(item);
@@ -55,9 +58,8 @@ export default function App() {
   const [quickViewMovie, setQuickViewMovie] = useState(null);
   const [user, setUser] = useState(null);
 
-  // Current page state
-  const [currentPage, setCurrentPage] = useState('home');
-  const [selectedMovieId, setSelectedMovieId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Watchlist & watched lists
   const [watchlist, setWatchlist] = useState([]);
@@ -368,19 +370,12 @@ export default function App() {
   };
 
   const handleCardClick = (movieId) => {
-    setSelectedMovieId(movieId);
-    setCurrentPage('detail');
+    navigate(ROUTES.movie(movieId));
   };
 
   const handleSurpriseMe = (movieId) => {
-    setSelectedMovieId(movieId);
-    setCurrentPage('detail');
+    navigate(ROUTES.movie(movieId));
     toast('Surprise pick — enjoy!', 'info');
-  };
-
-  const handleNavigate = (pageId) => {
-    setCurrentPage(pageId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const sharedMovieProps = {
@@ -392,98 +387,30 @@ export default function App() {
     onWatchedToggle: handleWatchedToggle,
   };
 
-  // Page Routing Render Switcher
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return (
-          <HomePage
-            {...sharedMovieProps}
-            userReviews={userReviews}
-            onPlayTrailer={handlePlayTrailer}
-            onOpenAi={() => setCurrentPage('ai-recommendations')}
-            onSignInClick={() => setShowAuth(true)}
-            isGuest={Boolean(user?.isGuest)}
-            onSurpriseMe={handleSurpriseMe}
-          />
-        );
-      case 'search':
-        return (
-          <SearchPage {...sharedMovieProps} />
-        );
-      case 'watchlist':
-        return (
-          <WatchlistPage
-            {...sharedMovieProps}
-            onExplore={() => setCurrentPage('search')}
-          />
-        );
-      case 'reviews':
-        return (
-          <ReviewsPage
-            userReviews={userReviews}
-            onDeleteReview={handleDeleteReview}
-            onCardClick={handleCardClick}
-            user={user}
-          />
-        );
-      case 'profile':
-        return (
-          <ProfilePage
-            user={user}
-            watchlist={watchlist}
-            watched={watched}
-            userReviews={userReviews}
-          />
-        );
-      case 'ai-recommendations':
-        return (
-          <AiRecommendationsPage
-            watchlist={watchlist}
-            watched={watched}
-            userReviews={userReviews}
-            isGuest={Boolean(user?.isGuest)}
-            isLoggedIn={Boolean(user && !user.isGuest)}
-            username={user?.username ?? profile?.username ?? 'Guest'}
-            onSignInClick={() => setShowAuth(true)}
-          />
-        );
-      case 'detail':
-        return (
-          <MovieDetailPage
-            movieId={selectedMovieId}
-            onBack={() => setCurrentPage('home')}
-            onCardClick={handleCardClick}
-            watchlist={watchlist}
-            watched={watched}
-            onWatchlistToggle={handleWatchlistToggle}
-            onWatchedToggle={handleWatchedToggle}
-            user={user}
-            userReviews={userReviews}
-            onAddReview={handleAddReview}
-            onDeleteReview={handleDeleteReview}
-            onUpdateReview={handleUpdateReview}
-            onQuickView={handleQuickView}
-          />
-        );
-      case 'about':
-        return <AboutPage onNavigate={handleNavigate} />;
-      case 'developer':
-        return <DeveloperPage />;
-      case 'contact':
-        return <ContactPage onNavigate={handleNavigate} />;
-      case 'report':
-        return <ReportPage user={user} />;
-      case 'feedback':
-        return <FeedbackPage user={user} />;
-      case 'privacy':
-        return <PrivacyPage />;
-      case 'terms':
-        return <TermsPage />;
-      default:
-        return <div className="text-white py-20 text-center">Page under construction</div>;
-    }
+  const movieDetailProps = {
+    onCardClick: handleCardClick,
+    watchlist,
+    watched,
+    onWatchlistToggle: handleWatchlistToggle,
+    onWatchedToggle: handleWatchedToggle,
+    user,
+    userReviews,
+    onAddReview: handleAddReview,
+    onDeleteReview: handleDeleteReview,
+    onUpdateReview: handleUpdateReview,
+    onQuickView: handleQuickView,
   };
+
+  function MovieDetailRoute() {
+    const { movieId } = useParams();
+    return (
+      <MovieDetailPage
+        movieId={movieId}
+        onBack={() => navigate(-1)}
+        {...movieDetailProps}
+      />
+    );
+  }
 
   if (authLoading || !introReady) {
     return (
@@ -519,25 +446,94 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-dark-bg text-gray-100 selection:bg-brand-gold selection:text-black">
       <CursorGlow />
-      {/* Top Navigation */}
-      <Navbar
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        onOpenAuth={() => setShowAuth(true)}
-      />
+      <ScrollToTop />
+      <Navbar onOpenAuth={() => setShowAuth(true)} />
 
-      {/* Main Content Area */}
       <main className="flex-grow">
-        {renderPage()}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                {...sharedMovieProps}
+                userReviews={userReviews}
+                onPlayTrailer={handlePlayTrailer}
+                onOpenAi={() => navigate(ROUTES.ai)}
+                onSignInClick={() => setShowAuth(true)}
+                isGuest={Boolean(user?.isGuest)}
+                onSurpriseMe={handleSurpriseMe}
+              />
+            }
+          />
+          <Route path="/search" element={<SearchPage {...sharedMovieProps} />} />
+          <Route
+            path="/watchlist"
+            element={
+              <WatchlistPage
+                {...sharedMovieProps}
+                onExplore={() => navigate(ROUTES.search)}
+              />
+            }
+          />
+          <Route
+            path="/reviews"
+            element={
+              <ReviewsPage
+                userReviews={userReviews}
+                onDeleteReview={handleDeleteReview}
+                onCardClick={handleCardClick}
+                user={user}
+              />
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProfilePage
+                user={user}
+                watchlist={watchlist}
+                watched={watched}
+                userReviews={userReviews}
+              />
+            }
+          />
+          <Route
+            path="/ai"
+            element={
+              <AiRecommendationsPage
+                watchlist={watchlist}
+                watched={watched}
+                userReviews={userReviews}
+                isGuest={Boolean(user?.isGuest)}
+                isLoggedIn={Boolean(user && !user.isGuest)}
+                username={user?.username ?? profile?.username ?? 'Guest'}
+                onSignInClick={() => setShowAuth(true)}
+              />
+            }
+          />
+          <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/developer" element={<DeveloperPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/report" element={<ReportPage user={user} />} />
+          <Route path="/feedback" element={<FeedbackPage user={user} />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route
+            path="*"
+            element={
+              <div className="text-white py-20 text-center">Page under construction</div>
+            }
+          />
+        </Routes>
       </main>
 
-      {/* Footer Details */}
-      <Footer currentPage={currentPage} onNavigate={handleNavigate} />
+      <Footer />
 
       <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
 
       <FloatingAiButton
-        hidden={currentPage === 'ai-recommendations'}
+        hidden={location.pathname === ROUTES.ai}
         isGuest={Boolean(user?.isGuest)}
         isLoggedIn={Boolean(user && !user.isGuest)}
         username={user?.username ?? profile?.username ?? 'Guest'}

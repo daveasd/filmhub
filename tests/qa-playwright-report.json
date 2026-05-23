@@ -1,0 +1,205 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\playwright.config.mjs",
+    "rootDir": "C:/Users/davea/.gemini/antigravity/scratch/filmhub/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "tests/qa-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/davea/.gemini/antigravity/scratch/filmhub/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/davea/.gemini/antigravity/scratch/filmhub/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.49.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "qa-live.spec.mjs",
+      "file": "qa-live.spec.mjs",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "mobile responsive",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 4439,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "\n=== QA SUMMARY ===\n"
+                    },
+                    {
+                      "text": "Passed: \u001b[33m1\u001b[39m\n"
+                    },
+                    {
+                      "text": "Failed: \u001b[33m1\u001b[39m\n"
+                    },
+                    {
+                      "text": "Bugs: \u001b[33m1\u001b[39m\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-23T12:12:12.375Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f404f8c09ac6276b4360-73944f64c4cb90a78a8c",
+          "file": "qa-live.spec.mjs",
+          "line": 263,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "FilmHub Live QA — Desktop",
+          "file": "qa-live.spec.mjs",
+          "line": 52,
+          "column": 6,
+          "specs": [
+            {
+              "title": "full site walkthrough",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "failed",
+                      "duration": 9411,
+                      "error": {
+                        "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /^Search$/i }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:text-brand-gold text-gray-400\">…</button> aka getByRole('navigation').getByRole('button', { name: 'Search' })\n    2) <button type=\"button\" class=\"text-sm transition-colors hover:text-brand-gold text-gray-400\">Search</button> aka getByRole('contentinfo').getByRole('button', { name: 'Search' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /^Search$/i })\u001b[22m\n",
+                        "stack": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /^Search$/i }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:text-brand-gold text-gray-400\">…</button> aka getByRole('navigation').getByRole('button', { name: 'Search' })\n    2) <button type=\"button\" class=\"text-sm transition-colors hover:text-brand-gold text-gray-400\">Search</button> aka getByRole('contentinfo').getByRole('button', { name: 'Search' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /^Search$/i })\u001b[22m\n\n    at C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\tests\\qa-live.spec.mjs:131:59",
+                        "location": {
+                          "file": "C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\tests\\qa-live.spec.mjs",
+                          "column": 59,
+                          "line": 131
+                        },
+                        "snippet": "  129 |\n  130 |     // 8. Search\n> 131 |     await page.getByRole('button', { name: /^Search$/i }).click();\n      |                                                           ^\n  132 |     const searchInput = page.getByPlaceholder(/Type movie|search/i);\n  133 |     await searchInput.fill('Inception');\n  134 |     await page.waitForTimeout(1500);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\tests\\qa-live.spec.mjs",
+                            "column": 59,
+                            "line": 131
+                          },
+                          "message": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: /^Search$/i }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:text-brand-gold text-gray-400\">…</button> aka getByRole('navigation').getByRole('button', { name: 'Search' })\n    2) <button type=\"button\" class=\"text-sm transition-colors hover:text-brand-gold text-gray-400\">Search</button> aka getByRole('contentinfo').getByRole('button', { name: 'Search' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /^Search$/i })\u001b[22m\n\n\n  129 |\n  130 |     // 8. Search\n> 131 |     await page.getByRole('button', { name: /^Search$/i }).click();\n      |                                                           ^\n  132 |     const searchInput = page.getByPlaceholder(/Type movie|search/i);\n  133 |     await searchInput.fill('Inception');\n  134 |     await page.waitForTimeout(1500);\n    at C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\tests\\qa-live.spec.mjs:131:59"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n=== QA SUMMARY ===\n"
+                        },
+                        {
+                          "text": "Passed: \u001b[33m7\u001b[39m\n"
+                        },
+                        {
+                          "text": "Failed: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "Bugs: \u001b[33m0\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-23T12:11:59.008Z",
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\test-results\\qa-live-FilmHub-Live-QA-—-Desktop-full-site-walkthrough\\test-failed-1.png"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\davea\\.gemini\\antigravity\\scratch\\filmhub\\tests\\qa-live.spec.mjs",
+                        "column": 59,
+                        "line": 131
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f404f8c09ac6276b4360-74663892546d90016c76",
+              "file": "qa-live.spec.mjs",
+              "line": 55,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-23T12:11:49.649Z",
+    "duration": 27883.275999999998,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

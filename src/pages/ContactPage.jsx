@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Code2, Link2, Send, Globe, MessageCircle, ExternalLink } from 'lucide-react';
 import StaticPageLayout, { StaticCard, StaticSectionTitle } from '../components/StaticPageLayout';
+import { pageIdToPath } from '../lib/routes';
 
 const LINKS = [
   {
@@ -22,7 +24,8 @@ const LINKS = [
 const rowClass =
   'flex items-center gap-3 rounded-lg border border-dark-border bg-dark-bg/50 px-4 py-3 transition-colors';
 
-export default function ContactPage({ onNavigate }) {
+export default function ContactPage() {
+  const navigate = useNavigate();
   return (
     <StaticPageLayout
       title="Contact"
@@ -99,25 +102,21 @@ export default function ContactPage({ onNavigate }) {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {onNavigate && (
-            <>
-              <button
-                type="button"
-                onClick={() => onNavigate('feedback')}
-                className="inline-flex items-center gap-2 rounded-lg bg-brand-gold/10 border border-brand-gold/40 text-brand-gold font-semibold text-sm px-4 py-2.5 hover:bg-brand-gold/20 transition-colors"
-              >
-                <Send className="h-4 w-4" />
-                Feedback
-              </button>
-              <button
-                type="button"
-                onClick={() => onNavigate('report')}
-                className="inline-flex items-center gap-2 rounded-lg border border-dark-border text-gray-300 font-semibold text-sm px-4 py-2.5 hover:border-brand-gold/40 hover:text-white transition-colors"
-              >
-                Report a problem
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={() => navigate(pageIdToPath('feedback'))}
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-gold/10 border border-brand-gold/40 text-brand-gold font-semibold text-sm px-4 py-2.5 hover:bg-brand-gold/20 transition-colors"
+          >
+            <Send className="h-4 w-4" />
+            Feedback
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(pageIdToPath('report'))}
+            className="inline-flex items-center gap-2 rounded-lg border border-dark-border text-gray-300 font-semibold text-sm px-4 py-2.5 hover:border-brand-gold/40 hover:text-white transition-colors"
+          >
+            Report a problem
+          </button>
         </div>
       </StaticCard>
     </StaticPageLayout>

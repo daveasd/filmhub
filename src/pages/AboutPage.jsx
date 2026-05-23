@@ -1,6 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Film, Bookmark, Eye, Star, Sparkles, User, Database } from 'lucide-react';
 import StaticPageLayout, { StaticCard, StaticSectionTitle } from '../components/StaticPageLayout';
+import { ROUTES } from '../lib/routes';
 
 const FEATURES = [
   {
@@ -35,7 +37,7 @@ const FEATURES = [
   },
 ];
 
-export default function AboutPage({ onNavigate }) {
+export default function AboutPage() {
   return (
     <StaticPageLayout
       title="About Dave's FilmHub"
@@ -80,19 +82,13 @@ export default function AboutPage({ onNavigate }) {
         </div>
       </StaticCard>
 
-      {onNavigate && (
-        <p className="text-sm text-gray-500">
-          Meet the developer on the{' '}
-          <button
-            type="button"
-            onClick={() => onNavigate('developer')}
-            className="text-brand-gold font-semibold hover:underline"
-          >
-            Developer
-          </button>{' '}
-          page.
-        </p>
-      )}
+      <p className="text-sm text-gray-500">
+        Meet the developer on the{' '}
+        <Link to={ROUTES.developer} className="text-brand-gold font-semibold hover:underline">
+          Developer
+        </Link>{' '}
+        page.
+      </p>
     </StaticPageLayout>
   );
 }
