@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --color-brand-gold: #eab308;
+  --color-brand-red: #e11d48;
+  --color-dark-bg: #060608;
+  --color-dark-card: #121216;
+  --color-dark-border: #1e1e24;
+  --color-dark-hover: #25252e;
+}
+
+/* Custom styles for our cinematic UI */
+body {
+  background-color: #060608;
+  color: #f3f4f6; /* text-gray-100 */
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for premium look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060608;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e1e24;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+
+/* Custom animations and utils */
+.glassmorphism {
+  background: rgba(18, 18, 22, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 10px rgba(225, 29, 72, 0.3);
+}
+
+/* ─── Intro screen ───────────────────────────────────────────────────────── */
+.intro-bg-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(234, 179, 8, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(225, 29, 72, 0.08), transparent),
+    radial-gradient(ellipse 50% 30% at 10% 80%, rgba(139, 92, 246, 0.06), transparent);
+}
+
+.intro-vignette {
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.intro-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.intro-particle {
+  animation: intro-float ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.35);
+}
+
+@keyframes intro-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(-18px) scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+.intro-logo {
+  animation: intro-fade-up 0.7s ease-out both;
+}
+
+.intro-logo-icon {
+  animation: intro-logo-pulse 0.9s ease-out 0.15s both;
+}
+
+.intro-title {
+  animation: intro-fade-up 0.75s ease-out 0.25s both;
+}
+
+.intro-subtitle {
+  animation: intro-fade-up 0.75s ease-out 0.45s both;
+}
+
+.intro-actions {
+  animation: intro-fade-up 0.8s ease-out 0.6s both;
+}
+
+.intro-skip {
+  animation: intro-fade-in 0.5s ease-out 0.8s both;
+}
+
+.intro-footer-hint {
+  animation: intro-fade-in 1s ease-out 1s both;
+}
+
+@keyframes intro-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-logo-pulse {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
