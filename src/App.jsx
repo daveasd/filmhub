@@ -40,14 +40,13 @@ import {
   setGuestSession,
 } from './utils/introStorage';
 import ScrollToTop from './components/ScrollToTop';
+import AdminDashboardPage from './pages/AdminDashboard';
+import { logEvent } from './services/analytics';
 import { ROUTES } from './lib/routes';
 
 function normalizeListItem(item) {
   return normalizeMovie(item);
 }
-
-import AdminDashboardPage from './pages/AdminDashboard.jsx';
-import { logEvent } from './services/analytics.js';
 
 export default function App() {
   const {
