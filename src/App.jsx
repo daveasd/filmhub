@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import WrappedPage from './pages/WrappedPage';
 import AuthModal from './components/auth/AuthModal';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
@@ -517,6 +518,7 @@ export default function App() {
                 />
               }
             />
+                        <Route path="/wrapped" element={<WrappedPage user={user} watchlist={watchlist} watched={watched} userReviews={userReviews} />} />
             <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/developer" element={<DeveloperPage />} />

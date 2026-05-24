@@ -16,6 +16,7 @@ export const ROUTES = {
   terms: '/terms',
   movie: (id) => `/movie/${id}`,
   leaderboard: '/leaderboard',
+  wrapped: '/wrapped',
   publicProfile: (username) => `/u/${username}`,
 };
 

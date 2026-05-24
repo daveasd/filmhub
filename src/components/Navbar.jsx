@@ -24,10 +24,11 @@ const NAV_ITEMS = [
   { path: ROUTES.reviews, label: 'Reviews', icon: Star },
   { path: ROUTES.leaderboard, label: 'Leaderboard', icon: Trophy },
   { path: ROUTES.ai, label: 'AI Recs', icon: Sparkles },
+  { path: ROUTES.wrapped, label: 'Wrapped', icon: Sparkles },
   { path: ROUTES.profile, label: 'Profile', icon: User },
   { path: ROUTES.about, label: 'About', icon: Info },
   { path: ROUTES.contact, label: 'Contact', icon: Mail },
-  { path: ROUTES.report, label: 'Report', icon: AlertTriangle },
+  { path: ROUTES.report, label: 'Report', icon: AlertTriangle }
 ];
 
 const navLinkClass = ({ isActive }) =>
