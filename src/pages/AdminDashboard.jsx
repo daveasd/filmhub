@@ -24,13 +24,6 @@ export default function AdminDashboardPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (authLoading) return;
-    if (profile?.role !== 'admin') return;
-
-    loadData();
-  }, [authLoading, profile, activeTab]);
-
   const loadData = async () => {
     setLoading(true);
     try {
@@ -54,6 +47,13 @@ export default function AdminDashboardPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (profile?.role !== 'admin') return;
+
+    loadData();
+  }, [authLoading, profile, activeTab]);
 
   if (authLoading) {
     return <div className="text-white text-center py-20">Loading admin...</div>;
