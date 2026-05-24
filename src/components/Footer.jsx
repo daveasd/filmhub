@@ -20,10 +20,10 @@ const INFO_LINKS = [
   { id: 'terms', label: 'Terms' },
 ];
 
-function FooterLink({ pageId, label }) {
+function FooterLink({ id, label }) {
   const location = useLocation();
-  const path = pageIdToPath(pageId);
-  const isActive = pathToPageId(location.pathname) === pageId;
+  const path = pageIdToPath(id);
+  const isActive = pathToPageId(location.pathname) === id;
 
   return (
     <Link
