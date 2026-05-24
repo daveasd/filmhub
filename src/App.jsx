@@ -20,6 +20,8 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import PublicProfilePage from './pages/PublicProfilePage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { MOCK_REVIEWS } from './services/mockData';
 import { getMovieVideos } from './services/tmdb';
 import { supabase } from './lib/supabase';
@@ -447,151 +449,150 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-dark-bg text-gray-100 selection:bg-brand-gold selection:text-black">
-      <CursorGlow />
-      <ScrollToTop />
-      <Navbar onOpenAuth={() => setShowAuth(true)} />
-
-      <main className="flex-grow overflow-x-hidden">
-        <div key={location.pathname} className="animate-slide-up-fade">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  {...sharedMovieProps}
-                  userReviews={userReviews}
-                  onPlayTrailer={handlePlayTrailer}
-                  onOpenAi={() => navigate(ROUTES.ai)}
-                  onSignInClick={() => setShowAuth(true)}
-                  isGuest={Boolean(user?.isGuest)}
-                  onSurpriseMe={handleSurpriseMe}
-                />
-              }
-            />
-            <Route path="/search" element={<SearchPage {...sharedMovieProps} />} />
-            <Route
-              path="/watchlist"
-              element={
-                <WatchlistPage
-                  {...sharedMovieProps}
-                  onExplore={() => navigate(ROUTES.search)}
-                />
-              }
-            />
-            <Route
-              path="/reviews"
-              element={
-                <ReviewsPage
-                  userReviews={userReviews}
-                  onDeleteReview={handleDeleteReview}
-                  onCardClick={handleCardClick}
-                  user={user}
-                />
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProfilePage
-                  user={user}
-                  watchlist={watchlist}
-                  watched={watched}
-                  userReviews={userReviews}
-                />
-              }
-            />
-            <Route
-              path="/ai"
-              element={
-                <AiRecommendationsPage
-                  watchlist={watchlist}
-                  watched={watched}
-                  userReviews={userReviews}
-                  isGuest={Boolean(user?.isGuest)}
-                  isLoggedIn={Boolean(user && !user.isGuest)}
-                  username={user?.username ?? profile?.username ?? 'Guest'}
-                  onSignInClick={() => setShowAuth(true)}
-                  onCardClick={handleCardClick}
-                  onWatchlistToggle={handleWatchlistToggle}
-                  onWatchedToggle={handleWatchedToggle}
-                />
-              }
-            />
-                        <Route path="/wrapped" element={<WrappedPage user={user} watchlist={watchlist} watched={watched} userReviews={userReviews} />} />
-            <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/developer" element={<DeveloperPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/report" element={<ReportPage user={user} />} />
-            <Route path="/feedback" element={<FeedbackPage user={user} />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route path="/u/:username" element={<PublicProfilePage />} />
-            <Route
-              path="*"
-              element={
-                <div className="text-white py-20 text-center">Page under construction</div>
-              }
-            />
-          </Routes>
-        </div>
-      </main>
-
-      <Footer />
-
-      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
-
-      <FloatingAiButton
-        hidden={location.pathname === ROUTES.ai}
-        isGuest={Boolean(user?.isGuest)}
-        isLoggedIn={Boolean(user && !user.isGuest)}
-        username={user?.username ?? profile?.username ?? 'Guest'}
-        watchlist={watchlist}
-        watched={watched}
-        userReviews={userReviews}
-        onSignInClick={() => setShowAuth(true)}
-        onCardClick={handleCardClick}
-        onWatchlistToggle={handleWatchlistToggle}
-        onWatchedToggle={handleWatchedToggle}
-      />
-
-      {quickViewMovie && (
-        <QuickViewModal
-          movie={quickViewMovie}
-          onClose={() => setQuickViewMovie(null)}
-          onViewDetails={handleCardClick}
-          inWatchlist={watchlist.some((m) => getMovieId(m) === getMovieId(quickViewMovie))}
-          inWatched={watched.some((m) => getMovieId(m) === getMovieId(quickViewMovie))}
-          onWatchlistToggle={handleWatchlistToggle}
-          onWatchedToggle={handleWatchedToggle}
-        />
-      )}
-
-      {/* Embedded Trailer Modal Popup */}
-      {activeTrailerUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden border border-brand-gold/30 bg-black shadow-2xl">
-            {/* Close trigger */}
-            <button
-              onClick={() => setActiveTrailerUrl(null)}
-              className="absolute top-4 right-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-brand-red hover:text-white transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <div className="aspect-video w-full">
-              <iframe
-                src={activeTrailerUrl}
-                title="Trailer Player"
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-dark-bg text-white font-sans selection:bg-brand-gold/30">
+        <BrowserRouter>
+          <ScrollToTop />
+          {/* Global Auth Modal Container */}
+          <div className="relative z-50">
+            <Navbar onOpenAuth={() => setShowAuth(true)} />
+            <main className="flex-grow overflow-x-hidden">
+              <div key={location.pathname} className="animate-slide-up-fade">
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <HomePage
+                        {...sharedMovieProps}
+                        userReviews={userReviews}
+                        onPlayTrailer={handlePlayTrailer}
+                        onOpenAi={() => navigate(ROUTES.ai)}
+                        onSignInClick={() => setShowAuth(true)}
+                        isGuest={Boolean(user?.isGuest)}
+                        onSurpriseMe={handleSurpriseMe}
+                      />
+                    }
+                  />
+                  <Route path="/search" element={<SearchPage {...sharedMovieProps} />} />
+                  <Route
+                    path="/watchlist"
+                    element={
+                      <WatchlistPage
+                        {...sharedMovieProps}
+                        onExplore={() => navigate(ROUTES.search)}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/reviews"
+                    element={
+                      <ReviewsPage
+                        userReviews={userReviews}
+                        onDeleteReview={handleDeleteReview}
+                        onCardClick={handleCardClick}
+                        user={user}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProfilePage
+                        user={user}
+                        watchlist={watchlist}
+                        watched={watched}
+                        userReviews={userReviews}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/ai"
+                    element={
+                      <AiRecommendationsPage
+                        watchlist={watchlist}
+                        watched={watched}
+                        userReviews={userReviews}
+                        isGuest={Boolean(user?.isGuest)}
+                        isLoggedIn={Boolean(user && !user.isGuest)}
+                        username={user?.username ?? profile?.username ?? 'Guest'}
+                        onSignInClick={() => setShowAuth(true)}
+                        onCardClick={handleCardClick}
+                        onWatchlistToggle={handleWatchlistToggle}
+                        onWatchedToggle={handleWatchedToggle}
+                      />
+                    }
+                  />
+                  <Route path="/wrapped" element={<WrappedPage user={user} watchlist={watchlist} watched={watched} userReviews={userReviews} />} />
+                  <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/developer" element={<DeveloperPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/report" element={<ReportPage user={user} />} />
+                  <Route path="/feedback" element={<FeedbackPage user={user} />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/u/:username" element={<PublicProfilePage />} />
+                  <Route
+                    path="*"
+                    element={
+                      <div className="text-white py-20 text-center">Page under construction</div>
+                    }
+                  />
+                </Routes>
+              </div>
+            </main>
+            <Footer />
           </div>
-        </div>
-      )}
-    </div>
+          <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
+          <FloatingAiButton
+            hidden={location.pathname === ROUTES.ai}
+            isGuest={Boolean(user?.isGuest)}
+            isLoggedIn={Boolean(user && !user.isGuest)}
+            username={user?.username ?? profile?.username ?? 'Guest'}
+            watchlist={watchlist}
+            watched={watched}
+            userReviews={userReviews}
+            onSignInClick={() => setShowAuth(true)}
+            onCardClick={handleCardClick}
+            onWatchlistToggle={handleWatchlistToggle}
+            onWatchedToggle={handleWatchedToggle}
+          />
+          {quickViewMovie && (
+            <QuickViewModal
+              movie={quickViewMovie}
+              onClose={() => setQuickViewMovie(null)}
+              onViewDetails={handleCardClick}
+              inWatchlist={watchlist.some((m) => getMovieId(m) === getMovieId(quickViewMovie))}
+              inWatched={watched.some((m) => getMovieId(m) === getMovieId(quickViewMovie))}
+              onWatchlistToggle={handleWatchlistToggle}
+              onWatchedToggle={handleWatchedToggle}
+            />
+          )}
+          {activeTrailerUrl && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
+              <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden border border-brand-gold/30 bg-black shadow-2xl">
+                <button
+                  onClick={() => setActiveTrailerUrl(null)}
+                  className="absolute top-4 right-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-brand-red hover:text-white transition-all"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <div className="aspect-video w-full">
+                  <iframe
+                    src={activeTrailerUrl}
+                    title="Trailer Player"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </BrowserRouter>
+      </div>
+    </ErrorBoundary>
   );
 }

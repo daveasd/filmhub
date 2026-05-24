@@ -104,13 +104,23 @@ export default function MovieDetailPage({
   if (loading) return <MovieDetailSkeleton />;
   if (error || !movie) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <div className="rounded-lg bg-brand-red/10 border border-brand-red/30 p-6 text-brand-red inline-block mb-4">
-          {error || "Movie not found"}
-        </div>
-        <div>
-          <button onClick={onBack} className="inline-flex items-center gap-2 text-white hover:text-brand-gold font-bold">
-            <ArrowLeft className="h-5 w-5" /> Go Back
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          <div className="flex justify-center mb-6">
+            <div className="h-20 w-20 bg-brand-red/10 border-2 border-brand-red/20 rounded-full flex items-center justify-center text-brand-red shadow-[0_0_30px_rgba(225,29,72,0.15)] relative">
+              <AlertTriangle size={32} />
+              <Film size={16} className="absolute -bottom-1 -right-1 text-gray-500 bg-dark-bg rounded-full" />
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Movie Unavailable</h2>
+          <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+            {error || "We couldn't find the details for this movie. It may have been removed or the ID is invalid."}
+          </p>
+          <button
+            onClick={onBack}
+            className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white font-bold py-3 px-6 rounded-lg transition-colors border border-white/10"
+          >
+            <ArrowLeft className="h-5 w-5" /> Return to Previous
           </button>
         </div>
       </div>

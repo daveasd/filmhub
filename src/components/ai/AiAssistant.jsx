@@ -238,9 +238,14 @@ Please provide 3 highly customized movie recommendations that perfectly match th
       </div>
 
       {error && (
-        <div className="mx-4 mb-2 flex items-start gap-2 rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2 text-xs text-rose-400">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          {error}
+        <div className="mx-4 mb-2 flex items-start gap-3 rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-left">
+          <div className="h-7 w-7 bg-rose-500/20 rounded-full flex items-center justify-center shrink-0">
+            <AlertCircle className="h-4 w-4 text-rose-500" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-rose-500 mb-0.5">AI Error</h4>
+            <p className="text-[11px] text-rose-400/90 leading-relaxed">{error}</p>
+          </div>
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bookmark, Eye, Star, Award, ShieldAlert, Mail, Sparkles, Share2, Compass, Loader2 } from 'lucide-react';
+import { User, Bookmark, Eye, Star, Award, ShieldAlert, Mail, Sparkles, Share2, Compass, Loader2, Edit3, Check, X } from 'lucide-react';
 import { getProfileBadges, estimateFavoriteGenre, calculateTasteDNA, buildForYouMovies } from '../utils/forYou';
 import { getUserRatings } from '../services/dataService';
 import { getMovieDetails, getTrendingMovies, getPopularMovies, getTopRatedMovies } from '../services/tmdb';
@@ -36,6 +36,63 @@ export default function ProfilePage({
   const [recommendations, setRecommendations] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    username: '',
+    display_name: '',
+    bio: '',
+    avatar_url: '',
+  });
+  const [editError, setEditError] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setEditForm({
+        username: profile.username || '',
+        display_name: profile.display_name || '',
+        bio: profile.bio || '',
+        avatar_url: profile.avatar_url || '',
+      });
+    } else if (user) {
+      setEditForm(prev => ({ ...prev, username: user.username || '' }));
+    }
+  }, [profile, user]);
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setEditError('');
+    
+    // Validate username
+    const usernameRegex = /^[a-z0-9_-]+$/;
+    if (!usernameRegex.test(editForm.username)) {
+      setEditError('Username must be lowercase letters, numbers, underscores, or dashes only.');
+      return;
+    }
+    if (editForm.username.includes(' ')) {
+      setEditError('Username cannot contain spaces.');
+      return;
+    }
+
+    setEditSaving(true);
+    try {
+      await updateProfile({
+        username: editForm.username,
+        display_name: editForm.display_name,
+        bio: editForm.bio,
+        avatar_url: editForm.avatar_url,
+      });
+      setIsEditing(false);
+    } catch (err) {
+      if (err.message?.includes('duplicate key value violates unique constraint')) {
+        setEditError('Username is already taken.');
+      } else {
+        setEditError(err.message || 'Failed to update profile.');
+      }
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   useEffect(() => {
     getUserRatings(user?.id).then(setRatings);
@@ -169,22 +226,126 @@ export default function ProfilePage({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* User Card info */}
         <div className="md:col-span-1 space-y-6">
-          <div className="glassmorphism rounded-2xl p-6 text-center space-y-4">
-            {/* Avatar */}
-            <div className="mx-auto h-24 w-24 rounded-full bg-brand-gold/10 border-2 border-brand-gold flex items-center justify-center text-brand-gold text-4xl font-extrabold shadow-[0_0_20px_rgba(234,179,8,0.4)]">
-              {user ? user.username[0].toUpperCase() : 'G'}
-            </div>
-            
-            <div>
-              <h2 className="text-xl font-bold text-white truncate">{user ? user.username : 'Guest User'}</h2>
-              <span className="inline-block mt-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 px-3.5 py-0.5 text-xs font-semibold text-brand-gold">
-                {getProfileBadge()}
-              </span>
-            </div>
+          <div className="glassmorphism rounded-2xl p-6 relative">
+            {!user?.isGuest && !isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5"
+                title="Edit Profile"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
+            )}
 
-            <p className="text-xs text-gray-500 italic max-w-[200px] mx-auto">
-              "{badgeDescription()}"
-            </p>
+            {isEditing ? (
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                <h3 className="text-white font-bold text-lg mb-4">Edit Profile</h3>
+                
+                {editError && (
+                  <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded p-2">
+                    {editError}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Username</label>
+                  <input
+                    type="text"
+                    value={editForm.username}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value.toLowerCase() }))}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-[10px] text-gray-500 mt-1">Unique. Used for public profile URL.</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Display Name</label>
+                  <input
+                    type="text"
+                    value={editForm.display_name}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, display_name: e.target.value }))}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+                    placeholder="E.g., David Anderson"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Bio</label>
+                  <textarea
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none h-20 resize-none"
+                    placeholder="Tell us about your cinematic taste..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Avatar URL</label>
+                  <input
+                    type="url"
+                    value={editForm.avatar_url}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, avatar_url: e.target.value }))}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="submit"
+                    disabled={editSaving}
+                    className="flex-1 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold py-2 rounded transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
+                  >
+                    {editSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditError('');
+                    }}
+                    disabled={editSaving}
+                    className="flex-1 bg-dark-hover text-white text-xs font-bold py-2 rounded transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
+                  >
+                    <X className="w-3 h-3" />
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center space-y-4">
+                {/* Avatar */}
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.username || 'Avatar'}
+                    className="mx-auto h-24 w-24 rounded-full object-cover border-2 border-brand-gold shadow-[0_0_20px_rgba(234,179,8,0.4)]"
+                  />
+                ) : (
+                  <div className="mx-auto h-24 w-24 rounded-full bg-brand-gold/10 border-2 border-brand-gold flex items-center justify-center text-brand-gold text-4xl font-extrabold shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                    {profile?.username ? profile.username[0].toUpperCase() : user?.username ? user.username[0].toUpperCase() : 'G'}
+                  </div>
+                )}
+                
+                <div>
+                  <h2 className="text-xl font-bold text-white truncate">
+                    {profile?.display_name || profile?.username || user?.username || 'Guest User'}
+                  </h2>
+                  {profile?.display_name && (
+                    <p className="text-xs text-gray-400 mt-0.5">@{profile.username || user?.username}</p>
+                  )}
+                  <span className="inline-block mt-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 px-3.5 py-0.5 text-xs font-semibold text-brand-gold">
+                    {getProfileBadge()}
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-500 italic max-w-[200px] mx-auto">
+                  {profile?.bio ? `"${profile.bio}"` : `"${badgeDescription()}"`}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Account details */}

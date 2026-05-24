@@ -485,8 +485,14 @@ export default function SearchPage({
         {/* Results grid */}
         <div className="col-span-1 lg:col-span-3 space-y-4">
           {error && (
-            <div className="rounded-lg bg-brand-red/10 border border-brand-red/30 p-4 text-sm text-brand-red text-left">
-              {error}
+            <div className="flex items-start gap-3 rounded-xl bg-brand-red/10 border border-brand-red/30 p-4 text-left">
+              <div className="h-8 w-8 bg-brand-red/20 rounded-full flex items-center justify-center shrink-0">
+                <Info className="h-4 w-4 text-brand-red" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-brand-red mb-1">Search Error</h4>
+                <p className="text-xs text-brand-red/80 leading-relaxed">{error}</p>
+              </div>
             </div>
           )}
 

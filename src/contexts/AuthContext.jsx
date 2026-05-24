@@ -266,6 +266,30 @@ export function AuthProvider({ children }) {
     return { data, error }
   }, [user])
 
+  const resetPasswordForEmail = async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending reset email:', error);
+      throw error;
+    }
+  };
+
+  const updateUser = async (updates) => {
+    try {
+      const { data, error } = await supabase.auth.updateUser(updates);
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error updating user auth:', error);
+      throw error;
+    }
+  };
+
   // ── Context value ───────────────────────────────────────────────────────────
   const value = {
     user,
@@ -282,6 +306,8 @@ export function AuthProvider({ children }) {
     resendConfirmationEmail,
     refetchProfile: () => user && fetchProfile(user.id),
     clearUnconfirmedSession,
+    resetPasswordForEmail,
+    updateUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
