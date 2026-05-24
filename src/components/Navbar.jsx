@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Film,
@@ -13,11 +13,12 @@ import {
   Mail,
   AlertTriangle,
   Trophy,
+  Shield,
+  FileText,
+  ChevronDown,
 } from 'lucide-react';
 import UserMenu from './auth/UserMenu';
 import { ROUTES, pageIdToPath } from '../lib/routes';
-
-import { ChevronDown } from 'lucide-react';
 
 const PRIMARY_NAV_ITEMS = [
   { path: ROUTES.home, label: 'Home', icon: Film, end: true },
@@ -34,6 +35,8 @@ const SECONDARY_NAV_ITEMS = [
   { path: ROUTES.about, label: 'About', icon: Info },
   { path: ROUTES.contact, label: 'Contact', icon: Mail },
   { path: ROUTES.report, label: 'Report', icon: AlertTriangle },
+  { path: ROUTES.privacy, label: 'Privacy', icon: Shield },
+  { path: ROUTES.terms, label: 'Terms', icon: FileText },
 ];
 
 const navLinkClass = ({ isActive }) =>
@@ -48,15 +51,47 @@ const mobileNavLinkClass = ({ isActive }) =>
       : 'text-gray-300 hover:bg-dark-hover hover:text-white'
   }`;
 
+const dropdownNavLinkClass = ({ isActive }) =>
+  `flex w-full items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-dark-hover hover:text-brand-gold ${
+    isActive ? 'bg-brand-gold/10 text-brand-gold font-semibold' : 'text-gray-400'
+  }`;
+
 export default function Navbar({ onOpenAuth }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsMoreOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setIsMoreOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleUserMenuNavigate = (pageId) => {
     navigate(pageIdToPath(pageId));
     setIsOpen(false);
     setIsMoreOpen(false);
+    setIsMobileMoreOpen(false);
   };
 
 
@@ -80,8 +115,7 @@ export default function Navbar({ onOpenAuth }) {
           </NavLink>
 
           <div
-            className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-5 overflow-x-auto scrollbar-none min-w-0"
-            style={{ scrollbarWidth: 'none' }}
+            className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-5 overflow-visible min-w-0"
           >
             {PRIMARY_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -98,7 +132,7 @@ export default function Navbar({ onOpenAuth }) {
               );
             })}
             {/* More dropdown */}
-            <div className="relative" onMouseLeave={() => setIsMoreOpen(false)}>
+            <div className="relative" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
@@ -107,23 +141,22 @@ export default function Navbar({ onOpenAuth }) {
                 More <ChevronDown className="h-4 w-4" />
               </button>
               {isMoreOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md bg-dark-bg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    {SECONDARY_NAV_ITEMS.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <NavLink
-                          key={item.path}
-                          to={item.path}
-                          end={item.end}
-                          className={navLinkClass}
-                        >
-                          <Icon className="h-4 w-4 mr-2 inline" />
-                          {item.label}
-                        </NavLink>
-                      );
-                    })}
-                  </div>
+                <div className="absolute right-0 mt-2 w-48 rounded-md bg-dark-bg/95 backdrop-blur-md border border-dark-border/60 shadow-2xl z-50 py-1">
+                  {SECONDARY_NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={item.end}
+                        className={dropdownNavLinkClass}
+                        onClick={() => setIsMoreOpen(false)}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -137,7 +170,10 @@ export default function Navbar({ onOpenAuth }) {
             <UserMenu onOpenAuth={onOpenAuth} onNavigate={handleUserMenuNavigate} />
             <button
               type="button"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => {
+                setIsOpen(!isOpen);
+                setIsMobileMoreOpen(false);
+              }}
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-dark-hover hover:text-white"
               aria-label="Menu"
             >
@@ -158,7 +194,10 @@ export default function Navbar({ onOpenAuth }) {
                 to={item.path}
                 end={item.end}
                 className={mobileNavLinkClass}
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsMobileMoreOpen(false);
+                }}
               >
                 <Icon className="h-5 w-5" />
                 {item.label}
@@ -168,14 +207,14 @@ export default function Navbar({ onOpenAuth }) {
           {/* More toggle for secondary items */}
           <button
             type="button"
-            onClick={() => setIsMoreOpen(!isMoreOpen)}
+            onClick={() => setIsMobileMoreOpen(!isMobileMoreOpen)}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-300 hover:bg-dark-hover hover:text-white"
           >
             <ChevronDown className="h-5 w-5" />
             More
           </button>
-          {isMoreOpen && (
-            <div className="border-t border-dark-border">
+          {isMobileMoreOpen && (
+            <div className="border-t border-dark-border pl-4">
               {SECONDARY_NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -184,7 +223,10 @@ export default function Navbar({ onOpenAuth }) {
                     to={item.path}
                     end={item.end}
                     className={mobileNavLinkClass}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      setIsMobileMoreOpen(false);
+                    }}
                   >
                     <Icon className="h-5 w-5" />
                     {item.label}
