@@ -46,6 +46,9 @@ function normalizeListItem(item) {
   return normalizeMovie(item);
 }
 
+import AdminDashboardPage from './pages/AdminDashboard.jsx';
+import { logEvent } from './services/analytics.js';
+
 export default function App() {
   const {
     user: authUser,
@@ -56,6 +59,10 @@ export default function App() {
     continueAsGuest,
   } = useAuth();
   const { toast } = useToast();
+  // Basic analytics integration
+  useEffect(() => {
+    logEvent('page_view', { path: location.pathname }, user?.isGuest ? null : user?.id);
+  }, [location.pathname, user]);
 
   const [showAuth, setShowAuth] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
@@ -533,6 +540,7 @@ export default function App() {
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/u/:username" element={<PublicProfilePage />} />
+                  <Route path="/admin" element={<AdminDashboardPage />} />
                   <Route
                     path="*"
                     element={
