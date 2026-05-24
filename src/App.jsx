@@ -451,7 +451,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-dark-bg text-white font-sans selection:bg-brand-gold/30">
-        <BrowserRouter>
           <ScrollToTop />
           {/* Global Auth Modal Container */}
           <div className="relative z-50">
@@ -591,7 +590,6 @@ export default function App() {
               </div>
             </div>
           )}
-        </BrowserRouter>
       </div>
     </ErrorBoundary>
   );
