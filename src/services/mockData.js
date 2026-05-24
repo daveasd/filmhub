@@ -341,3 +341,51 @@ export const MOCK_AI_RESPONSES = [
   "It looks like you've been watching animated adventures! I suggest 'Spider-Man: Across the Spider-Verse' and 'Puss in Boots: The Last Wish' for their innovative animation styles and high-quality storytelling.",
   "You seem to love Christopher Nolan's films. If you haven't yet, you should definitely watch 'Memento' or 'Tenet' to see more of his unique approach to time and structure."
 ];
+
+export const getMockWatchProviders = (id) => {
+  return {
+    id: parseInt(id, 10),
+    results: {
+      US: {
+        link: "https://www.themoviedb.org/",
+        flatrate: [
+          { provider_id: 8, provider_name: "Netflix", logo_path: "/gpobqo4StykK6uCWMxw6jLBZ4iR.jpg" },
+          { provider_id: 15, provider_name: "Hulu", logo_path: "/zxrV6kg1v5AM6bH1Yn9O86j1g05.jpg" }
+        ],
+        rent: [
+          { provider_id: 2, provider_name: "Apple TV", logo_path: "/q69wwrjFU1wJZK61QjGgT4J04tE.jpg" },
+          { provider_id: 3, provider_name: "Google Play Movies", logo_path: "/1Z8QzT4fW16Vp0G2gQd9T3j1h03.jpg" }
+        ],
+        buy: [
+          { provider_id: 2, provider_name: "Apple TV", logo_path: "/q69wwrjFU1wJZK61QjGgT4J04tE.jpg" },
+          { provider_id: 10, provider_name: "Amazon Video", logo_path: "/sewRPAx9cl67HwT244V265t1g06.jpg" }
+        ]
+      },
+      GB: {
+        link: "https://www.themoviedb.org/",
+        flatrate: [
+          { provider_id: 8, provider_name: "Netflix", logo_path: "/gpobqo4StykK6uCWMxw6jLBZ4iR.jpg" },
+          { provider_id: 337, provider_name: "Disney Plus", logo_path: "/9A1w156Rs1WqG9bH5eG44y3y1g04.jpg" }
+        ],
+        rent: [
+          { provider_id: 2, provider_name: "Apple TV", logo_path: "/q69wwrjFU1wJZK61QjGgT4J04tE.jpg" }
+        ],
+        buy: [
+          { provider_id: 2, provider_name: "Apple TV", logo_path: "/q69wwrjFU1wJZK61QjGgT4J04tE.jpg" }
+        ]
+      },
+      CA: {
+        link: "https://www.themoviedb.org/",
+        flatrate: [
+          { provider_id: 8, provider_name: "Netflix", logo_path: "/gpobqo4StykK6uCWMxw6jLBZ4iR.jpg" }
+        ]
+      },
+      IN: {
+        link: "https://www.themoviedb.org/",
+        flatrate: [
+          { provider_id: 122, provider_name: "Hotstar", logo_path: "/q69wwrjFU1wJZK61QjGgT4J04tE.jpg" }
+        ]
+      }
+    }
+  };
+};

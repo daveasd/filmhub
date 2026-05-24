@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Clock, Calendar, Film, ArrowLeft, Bookmark, Eye, Play, Sparkles, MessageSquare, AlertTriangle, Trash2, Edit2, ThumbsUp } from 'lucide-react';
-import { getMovieDetails, getMovieCredits, getMovieVideos, getSimilarMovies } from '../services/tmdb';
+import { getMovieDetails, getMovieCredits, getMovieVideos, getSimilarMovies, getMovieWatchProviders } from '../services/tmdb';
 import { MovieDetailSkeleton } from '../components/SkeletonLoader';
 import MovieCard from '../components/MovieCard';
+import WhereToWatch from '../components/WhereToWatch';
 import {
   getReviewLikeCount,
   hasUserLikedReview,
@@ -35,6 +36,7 @@ export default function MovieDetailPage({
   const [credits, setCredits] = useState({ cast: [] });
   const [videos, setVideos] = useState({ results: [] });
   const [similar, setSimilar] = useState([]);
+  const [providers, setProviders] = useState(null);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,11 +61,12 @@ export default function MovieDetailPage({
         setLoading(true);
         setError(null);
 
-        const [detailsData, creditsData, videosData, similarData] = await Promise.all([
+        const [detailsData, creditsData, videosData, similarData, providersData] = await Promise.all([
           getMovieDetails(movieId),
           getMovieCredits(movieId),
           getMovieVideos(movieId),
-          getSimilarMovies(movieId)
+          getSimilarMovies(movieId),
+          getMovieWatchProviders(movieId)
         ]);
 
         if (isMounted) {
@@ -71,6 +74,7 @@ export default function MovieDetailPage({
           setCredits(creditsData);
           setVideos(videosData);
           setSimilar(similarData);
+          setProviders(providersData);
           
           // Reset review form
           setReviewText('');
@@ -412,6 +416,9 @@ export default function MovieDetailPage({
             </div>
           </div>
         )}
+
+        {/* Where to Watch Section */}
+        <WhereToWatch providers={providers} />
 
         {/* Reviews Section */}
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">

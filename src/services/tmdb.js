@@ -133,12 +133,40 @@ export const getSimilarMovies = async (id) => {
   return cleanResults(data.results);
 };
 
+export const getMovieWatchProviders = async (id) => {
+  return await fetchFromTmdb(`/movie/${id}/watch/providers`, {}, () => mock.getMockWatchProviders(id));
+};
+
+export const TMDB_GENRES = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Science Fiction",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western"
+};
+
 /** Discover movies by TMDB genre ids and optional filters */
 export const discoverMovies = async ({
   genreIds = [],
   sortBy = 'popularity.desc',
   maxRuntime,
   minVoteAverage,
+  year,
+  language,
   page = 1,
 } = {}) => {
   const params = {
@@ -149,6 +177,8 @@ export const discoverMovies = async ({
   if (genreIds.length) params.with_genres = genreIds.join(',')
   if (maxRuntime) params['with_runtime.lte'] = maxRuntime
   if (minVoteAverage) params['vote_average.gte'] = minVoteAverage
+  if (year) params.primary_release_year = year
+  if (language) params.with_original_language = language
 
   const data = await fetchFromTmdb('/discover/movie', params, () => ({
     results: mock.getMockPopularMovies(),

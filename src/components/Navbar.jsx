@@ -133,32 +133,34 @@ export default function Navbar({ onOpenAuth }) {
             })}
             {/* More dropdown */}
             <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-brand-gold focus:outline-none"
-              >
-                More <ChevronDown className="h-4 w-4" />
-              </button>
-              {isMoreOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md bg-dark-bg/95 backdrop-blur-md border border-dark-border/60 shadow-2xl z-50 py-1">
-                  {SECONDARY_NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <NavLink
-                        key={item.path}
-                        to={item.path}
-                        end={item.end}
-                        className={dropdownNavLinkClass}
-                        onClick={() => setIsMoreOpen(false)}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    );
-                  })}
-                </div>
-              )}
+                <button
+                  type="button"
+                  aria-expanded={isMoreOpen}
+                  onClick={() => setIsMoreOpen(!isMoreOpen)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsMoreOpen(!isMoreOpen); } }}
+                  className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-brand-gold focus:outline-none"
+                >
+                  More <ChevronDown className="h-4 w-4" />
+                </button>
+                {isMoreOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-md bg-dark-bg/95 backdrop-blur-md border border-dark-border/60 shadow-2xl z-50 py-1 pointer-events-auto">
+                    {SECONDARY_NAV_ITEMS.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={item.path}
+                          end={item.end}
+                          className={dropdownNavLinkClass}
+                          onClick={() => setIsMoreOpen(false)}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" />
+                          <span>{item.label}</span>
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                )}
             </div>
           </div>
 
