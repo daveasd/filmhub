@@ -216,10 +216,10 @@ export default function MovieDetailPage({
         <img
           src={getBackdropUrl()}
           alt={title}
-          className="w-full h-full object-cover object-top brightness-[0.3]"
+          className="w-full h-full object-cover object-top brightness-[0.3] blur-sm scale-105"
           onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=1600'; }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/50 to-transparent" />
         
         {/* Back Button */}
         <button
@@ -231,7 +231,7 @@ export default function MovieDetailPage({
       </div>
 
       {/* Main Info */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-28 relative z-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-28 relative z-10 animate-slide-up-fade">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Movie Poster */}
           <div className="w-56 md:w-64 shrink-0 mx-auto md:mx-0">
@@ -272,7 +272,7 @@ export default function MovieDetailPage({
 
           {/* Details */}
           <div className="flex-grow pt-4 md:pt-28 text-center md:text-left">
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-2">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-2 text-glow">
               {title}
             </h1>
             {tagline && (

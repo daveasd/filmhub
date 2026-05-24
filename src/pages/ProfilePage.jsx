@@ -45,22 +45,22 @@ export default function ProfilePage({
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 min-h-screen bg-dark-bg text-left">
+    <div className="mx-auto max-w-4xl px-4 py-8 min-h-screen bg-dark-bg text-left animate-slide-up-fade">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-white tracking-wide flex items-center gap-2">
-          <User className="h-7 w-7 text-brand-gold" />
+        <h1 className="text-3xl font-extrabold text-white tracking-wide flex items-center gap-2 text-glow">
+          <User className="h-7 w-7 text-brand-gold drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
           My Profile Dashboard
         </h1>
-        <p className="text-gray-400 text-sm mt-1">Manage stats, badge levels, and account details</p>
+        <p className="text-gray-300 text-sm mt-1">Manage stats, badge levels, and account details</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* User Card info */}
         <div className="md:col-span-1 space-y-6">
-          <div className="bg-dark-card border border-dark-border rounded-2xl p-6 text-center space-y-4">
+          <div className="glassmorphism rounded-2xl p-6 text-center space-y-4">
             {/* Avatar */}
-            <div className="mx-auto h-24 w-24 rounded-full bg-brand-gold/10 border-2 border-brand-gold flex items-center justify-center text-brand-gold text-4xl font-extrabold shadow-lg shadow-brand-gold/5">
+            <div className="mx-auto h-24 w-24 rounded-full bg-brand-gold/10 border-2 border-brand-gold flex items-center justify-center text-brand-gold text-4xl font-extrabold shadow-[0_0_20px_rgba(234,179,8,0.4)]">
               {user ? user.username[0].toUpperCase() : 'G'}
             </div>
             
@@ -77,8 +77,8 @@ export default function ProfilePage({
           </div>
 
           {/* Account details */}
-          <div className="bg-dark-card border border-dark-border rounded-xl p-5 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-dark-border pb-2">
+          <div className="glassmorphism rounded-xl p-5 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-dark-border/50 pb-2">
               Account Details
             </h3>
             
@@ -113,8 +113,8 @@ export default function ProfilePage({
           {/* Stats Cards grid */}
           <div className="grid grid-cols-2 gap-4">
             {/* Stat Watchlist */}
-            <div className="bg-dark-card border border-dark-border rounded-xl p-5 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-brand-gold/10 flex items-center justify-center text-brand-gold">
+            <div className="glassmorphism rounded-xl p-5 flex items-center gap-4 hover:scale-105 transition-transform duration-300 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:border-brand-gold/30">
+              <div className="h-12 w-12 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold shadow-[0_0_10px_rgba(234,179,8,0.3)]">
                 <Bookmark className="h-6 w-6" />
               </div>
               <div>
@@ -124,8 +124,8 @@ export default function ProfilePage({
             </div>
 
             {/* Stat Watched */}
-            <div className="bg-dark-card border border-dark-border rounded-xl p-5 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-brand-red/10 flex items-center justify-center text-brand-red">
+            <div className="glassmorphism rounded-xl p-5 flex items-center gap-4 hover:scale-105 transition-transform duration-300 hover:shadow-[0_0_15px_rgba(225,29,72,0.2)] hover:border-brand-red/30">
+              <div className="h-12 w-12 rounded-lg bg-brand-red/20 flex items-center justify-center text-brand-red shadow-[0_0_10px_rgba(225,29,72,0.3)]">
                 <Eye className="h-6 w-6" />
               </div>
               <div>
@@ -135,8 +135,8 @@ export default function ProfilePage({
             </div>
 
             {/* Stat Reviews */}
-            <div className="bg-dark-card border border-dark-border rounded-xl p-5 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-brand-gold/10 flex items-center justify-center text-brand-gold">
+            <div className="glassmorphism rounded-xl p-5 flex items-center gap-4 hover:scale-105 transition-transform duration-300 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:border-brand-gold/30">
+              <div className="h-12 w-12 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold shadow-[0_0_10px_rgba(234,179,8,0.3)]">
                 <Star className="h-6 w-6 fill-brand-gold" />
               </div>
               <div>
@@ -146,8 +146,8 @@ export default function ProfilePage({
             </div>
 
             {/* Stat Avg Rating */}
-            <div className="bg-dark-card border border-dark-border rounded-xl p-5 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center text-white">
+            <div className="glassmorphism rounded-xl p-5 flex items-center gap-4 hover:scale-105 transition-transform duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:border-white/20">
+              <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center text-white shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                 <Award className="h-6 w-6" />
               </div>
               <div>
@@ -158,17 +158,17 @@ export default function ProfilePage({
           </div>
 
           {favoriteGenre && (
-            <div className="bg-dark-card border border-violet-500/20 rounded-xl p-5 flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-violet-400 shrink-0" />
+            <div className="glassmorphism !border-violet-500/30 rounded-xl p-5 flex items-center gap-3 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+              <Sparkles className="h-6 w-6 text-violet-400 shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Favorite genre</p>
-                <p className="text-white font-semibold">{favoriteGenre}</p>
+                <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">Favorite genre</p>
+                <p className="text-white font-semibold text-lg">{favoriteGenre}</p>
               </div>
             </div>
           )}
 
-          <div className="bg-dark-card border border-dark-border rounded-xl p-6 space-y-4">
-            <h3 className="font-bold text-white border-b border-dark-border pb-2 flex items-center gap-2">
+          <div className="glassmorphism rounded-xl p-6 space-y-4">
+            <h3 className="font-bold text-white border-b border-dark-border/50 pb-3 flex items-center gap-2 text-lg">
               <Award className="h-5 w-5 text-brand-gold" />
               Badges
             </h3>

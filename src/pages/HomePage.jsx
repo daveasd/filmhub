@@ -174,17 +174,17 @@ export default function HomePage({
       />
 
       {/* Mood + Surprise */}
-      <section className="mx-auto max-w-7xl px-4 md:px-8 mt-2 mb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-brand-gold" />
-            Browse by mood
+      <section className="mx-auto max-w-7xl px-4 md:px-8 mt-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <h2 className="text-xl font-bold text-white flex items-center gap-2 animate-slide-up-fade">
+            <Sparkles className="h-6 w-6 text-violet-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+            <span className="text-glow">What are you in the mood for?</span>
           </h2>
           <button
             type="button"
             onClick={handleSurprise}
             disabled={surpriseLoading || loadingRows}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold font-bold text-sm px-4 py-2.5 hover:bg-brand-gold/20 transition-all disabled:opacity-50 min-h-[44px]"
+            className="filmhub-btn-glow inline-flex items-center justify-center gap-2 rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold font-bold text-sm px-4 py-2.5 hover:bg-brand-gold/20 transition-all disabled:opacity-50 min-h-[44px] animate-slide-up-fade"
           >
             {surpriseLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -194,21 +194,33 @@ export default function HomePage({
             Surprise Me
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {MOOD_KEYS.map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => handleMoodClick(key)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all min-h-[40px] ${
-                activeMood === key
-                  ? 'bg-brand-gold text-black shadow-md shadow-brand-gold/20'
-                  : 'bg-dark-card border border-dark-border text-gray-400 hover:border-brand-gold/50 hover:text-brand-gold'
-              }`}
-            >
-              {MOOD_PRESETS[key].label}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-3 animate-slide-up-fade" style={{ animationDelay: '100ms' }}>
+          {MOOD_KEYS.map((key) => {
+            const emojis = {
+              happy: '😊',
+              sad: '😢',
+              dark: '🌑',
+              romantic: '❤️',
+              action: '🔥',
+              mindblowing: '🤯',
+              short: '⏱️',
+            };
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleMoodClick(key)}
+                className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 min-h-[40px] ${
+                  activeMood === key
+                    ? 'bg-violet-600/40 text-white border-2 border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-105'
+                    : 'glassmorphism text-gray-300 hover:border-violet-500/50 hover:text-white hover:scale-105'
+                }`}
+              >
+                <span className="text-lg">{emojis[key]}</span>
+                {MOOD_PRESETS[key].label}
+              </button>
+            );
+          })}
         </div>
       </section>
 

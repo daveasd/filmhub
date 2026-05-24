@@ -127,12 +127,15 @@ export default function AiAssistant({
         }`}
       >
         {messages.length === 0 && !loading && (
-          <div className="text-center py-8 px-2">
-            <Bot className="h-12 w-12 text-brand-gold/60 mx-auto mb-3" />
-            <p className="text-white font-semibold text-sm mb-1">
+          <div className="text-center py-8 px-2 animate-slide-up-fade">
+            <div className="relative mx-auto mb-5 h-16 w-16">
+              <div className="absolute inset-0 rounded-full bg-violet-500/40 blur-[20px] animate-pulse" />
+              <Bot className="relative h-full w-full text-violet-400 drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
+            </div>
+            <p className="text-white font-bold text-base mb-1 text-glow">
               Hi! I&apos;m FilmHub AI
             </p>
-            <p className="text-gray-500 text-xs max-w-sm mx-auto mb-4">
+            <p className="text-gray-400 text-xs max-w-sm mx-auto mb-6">
               Ask me what to watch, mood-based picks, or suggestions based on
               {tasteCount > 0 ? ' your library' : ' genres you love'}.
             </p>
@@ -142,7 +145,7 @@ export default function AiAssistant({
                   key={prompt}
                   type="button"
                   onClick={() => sendMessage(prompt)}
-                  className="text-xs rounded-full border border-dark-border bg-dark-bg/80 px-3 py-1.5 text-gray-400 hover:border-brand-gold/40 hover:text-brand-gold transition-colors"
+                  className="glassmorphism text-xs rounded-full px-4 py-2 text-gray-300 hover:border-violet-500/50 hover:text-white hover:shadow-[0_0_10px_rgba(139,92,246,0.3)] hover:scale-105 transition-all duration-300"
                 >
                   {prompt}
                 </button>
@@ -157,8 +160,8 @@ export default function AiAssistant({
             className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="shrink-0 h-8 w-8 rounded-full bg-gradient-to-br from-rose-600 to-violet-700 flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-white" />
+              <div className="shrink-0 h-8 w-8 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                <Sparkles className="h-4 w-4 text-violet-400" />
               </div>
             )}
             <div
@@ -222,12 +225,12 @@ export default function AiAssistant({
           placeholder="Ask FilmHub AI: What should I watch?"
           disabled={loading}
           maxLength={2000}
-          className="flex-1 rounded-lg bg-dark-bg border border-dark-border text-white placeholder-gray-500 text-sm px-4 py-2.5 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 disabled:opacity-50"
+          className="flex-1 rounded-lg glassmorphism text-white placeholder-gray-500 text-sm px-4 py-2.5 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className="shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-r from-rose-600 to-violet-600 hover:from-rose-500 hover:to-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 transition-all"
+          className="filmhub-btn-glow shrink-0 flex items-center justify-center rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 transition-all"
           aria-label="Send"
         >
           {loading ? (

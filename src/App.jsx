@@ -449,86 +449,88 @@ export default function App() {
       <ScrollToTop />
       <Navbar onOpenAuth={() => setShowAuth(true)} />
 
-      <main className="flex-grow">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <HomePage
-                {...sharedMovieProps}
-                userReviews={userReviews}
-                onPlayTrailer={handlePlayTrailer}
-                onOpenAi={() => navigate(ROUTES.ai)}
-                onSignInClick={() => setShowAuth(true)}
-                isGuest={Boolean(user?.isGuest)}
-                onSurpriseMe={handleSurpriseMe}
-              />
-            }
-          />
-          <Route path="/search" element={<SearchPage {...sharedMovieProps} />} />
-          <Route
-            path="/watchlist"
-            element={
-              <WatchlistPage
-                {...sharedMovieProps}
-                onExplore={() => navigate(ROUTES.search)}
-              />
-            }
-          />
-          <Route
-            path="/reviews"
-            element={
-              <ReviewsPage
-                userReviews={userReviews}
-                onDeleteReview={handleDeleteReview}
-                onCardClick={handleCardClick}
-                user={user}
-              />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProfilePage
-                user={user}
-                watchlist={watchlist}
-                watched={watched}
-                userReviews={userReviews}
-              />
-            }
-          />
-          <Route
-            path="/ai"
-            element={
-              <AiRecommendationsPage
-                watchlist={watchlist}
-                watched={watched}
-                userReviews={userReviews}
-                isGuest={Boolean(user?.isGuest)}
-                isLoggedIn={Boolean(user && !user.isGuest)}
-                username={user?.username ?? profile?.username ?? 'Guest'}
-                onSignInClick={() => setShowAuth(true)}
-                onCardClick={handleCardClick}
-                onWatchlistToggle={handleWatchlistToggle}
-                onWatchedToggle={handleWatchedToggle}
-              />
-            }
-          />
-          <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/developer" element={<DeveloperPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/report" element={<ReportPage user={user} />} />
-          <Route path="/feedback" element={<FeedbackPage user={user} />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route
-            path="*"
-            element={
-              <div className="text-white py-20 text-center">Page under construction</div>
-            }
-          />
-        </Routes>
+      <main className="flex-grow overflow-x-hidden">
+        <div key={location.pathname} className="animate-slide-up-fade">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  {...sharedMovieProps}
+                  userReviews={userReviews}
+                  onPlayTrailer={handlePlayTrailer}
+                  onOpenAi={() => navigate(ROUTES.ai)}
+                  onSignInClick={() => setShowAuth(true)}
+                  isGuest={Boolean(user?.isGuest)}
+                  onSurpriseMe={handleSurpriseMe}
+                />
+              }
+            />
+            <Route path="/search" element={<SearchPage {...sharedMovieProps} />} />
+            <Route
+              path="/watchlist"
+              element={
+                <WatchlistPage
+                  {...sharedMovieProps}
+                  onExplore={() => navigate(ROUTES.search)}
+                />
+              }
+            />
+            <Route
+              path="/reviews"
+              element={
+                <ReviewsPage
+                  userReviews={userReviews}
+                  onDeleteReview={handleDeleteReview}
+                  onCardClick={handleCardClick}
+                  user={user}
+                />
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProfilePage
+                  user={user}
+                  watchlist={watchlist}
+                  watched={watched}
+                  userReviews={userReviews}
+                />
+              }
+            />
+            <Route
+              path="/ai"
+              element={
+                <AiRecommendationsPage
+                  watchlist={watchlist}
+                  watched={watched}
+                  userReviews={userReviews}
+                  isGuest={Boolean(user?.isGuest)}
+                  isLoggedIn={Boolean(user && !user.isGuest)}
+                  username={user?.username ?? profile?.username ?? 'Guest'}
+                  onSignInClick={() => setShowAuth(true)}
+                  onCardClick={handleCardClick}
+                  onWatchlistToggle={handleWatchlistToggle}
+                  onWatchedToggle={handleWatchedToggle}
+                />
+              }
+            />
+            <Route path="/movie/:movieId" element={<MovieDetailRoute />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/developer" element={<DeveloperPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/report" element={<ReportPage user={user} />} />
+            <Route path="/feedback" element={<FeedbackPage user={user} />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route
+              path="*"
+              element={
+                <div className="text-white py-20 text-center">Page under construction</div>
+              }
+            />
+          </Routes>
+        </div>
       </main>
 
       <Footer />

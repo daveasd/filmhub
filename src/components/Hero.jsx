@@ -39,14 +39,14 @@ export default function Hero({ movie, inWatchlist, onWatchlistToggle, onPlayTrai
 
       {/* Hero Content */}
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pb-12 md:pb-20">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl animate-slide-up-fade">
           {/* Badge */}
           <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-gold/15 border border-brand-gold/30 px-3 py-1 text-xs font-semibold text-brand-gold uppercase tracking-wider mb-4">
             Featured Spotlight
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-2 text-left">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-2 text-left text-glow">
             {title}
           </h1>
 
@@ -85,7 +85,7 @@ export default function Hero({ movie, inWatchlist, onWatchlistToggle, onPlayTrai
             {/* Play Trailer Button */}
             <button
               onClick={() => onPlayTrailer(id)}
-              className="flex items-center justify-center gap-2 rounded-lg bg-brand-gold hover:bg-brand-gold/90 text-black px-6 py-3 font-bold transition-all duration-200 shadow-lg shadow-brand-gold/20"
+              className="filmhub-btn-glow flex items-center justify-center gap-2 rounded-lg bg-brand-gold hover:bg-brand-gold/90 text-black px-6 py-3 font-bold transition-all duration-200"
             >
               <Play className="h-5 w-5 fill-black" />
               Watch Trailer
@@ -94,10 +94,10 @@ export default function Hero({ movie, inWatchlist, onWatchlistToggle, onPlayTrai
             {/* Watchlist Toggle Button */}
             <button
               onClick={() => onWatchlistToggle(movie)}
-              className={`flex items-center justify-center gap-2 rounded-lg border px-6 py-3 font-bold transition-all duration-200 ${
+              className={`filmhub-btn-glow flex items-center justify-center gap-2 rounded-lg border px-6 py-3 font-bold transition-all duration-200 ${
                 inWatchlist
                   ? 'bg-transparent border-brand-gold text-brand-gold hover:bg-brand-gold/10'
-                  : 'bg-dark-card/60 border-dark-border text-white hover:border-gray-500 hover:bg-dark-hover'
+                  : 'glassmorphism text-white hover:border-gray-500 hover:text-white'
               }`}
             >
               {inWatchlist ? (

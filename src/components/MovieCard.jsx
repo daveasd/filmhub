@@ -67,7 +67,7 @@ export default function MovieCard({
           <span>{formattedRating}</span>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-3 pb-4">
           <div className="flex gap-2 justify-center">
             {onQuickView && (
               <button
@@ -77,7 +77,7 @@ export default function MovieCard({
                   onQuickView(movie);
                 }}
                 title="Quick View"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600/90 border border-violet-400 text-white hover:bg-violet-500 transition-all"
+                className="filmhub-btn-glow flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600/90 border border-violet-400 text-white hover:bg-violet-500 transition-all shadow-[0_0_10px_rgba(139,92,246,0.3)]"
               >
                 <Maximize2 className="h-4 w-4" />
               </button>
@@ -89,10 +89,10 @@ export default function MovieCard({
                 onWatchlistToggle(movie);
               }}
               title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-              className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all border ${
+              className={`filmhub-btn-glow flex h-10 w-10 items-center justify-center rounded-lg transition-all border ${
                 inWatchlist
-                  ? 'bg-brand-gold border-brand-gold text-black'
-                  : 'bg-black/70 border-gray-600 text-white hover:border-brand-gold hover:text-brand-gold'
+                  ? 'bg-brand-gold border-brand-gold text-black shadow-[0_0_10px_rgba(234,179,8,0.3)]'
+                  : 'glassmorphism border-white/20 text-white hover:border-brand-gold hover:text-brand-gold'
               }`}
             >
               <Bookmark className={`h-4 w-4 ${inWatchlist ? 'fill-black' : ''}`} />
@@ -104,10 +104,10 @@ export default function MovieCard({
                 onWatchedToggle(movie);
               }}
               title={inWatched ? 'Mark as Unwatched' : 'Mark as Watched'}
-              className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all border ${
+              className={`filmhub-btn-glow flex h-10 w-10 items-center justify-center rounded-lg transition-all border ${
                 inWatched
-                  ? 'bg-brand-red border-brand-red text-white'
-                  : 'bg-black/70 border-gray-600 text-white hover:border-brand-red hover:text-brand-red'
+                  ? 'bg-brand-red border-brand-red text-white shadow-[0_0_10px_rgba(225,29,72,0.3)]'
+                  : 'glassmorphism border-white/20 text-white hover:border-brand-red hover:text-brand-red'
               }`}
             >
               <Eye className={`h-4 w-4 ${inWatched ? 'fill-white' : ''}`} />
