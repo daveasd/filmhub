@@ -124,10 +124,10 @@ export default function AuthModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 overflow-y-auto py-6 px-4 flex items-start justify-center bg-black/80 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-md bg-[#0f0f13] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-md bg-[#0f0f13] border border-white/10 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="h-1 w-full bg-gradient-to-r from-rose-600 via-violet-600 to-indigo-600" />
 
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
