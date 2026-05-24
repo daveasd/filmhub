@@ -17,18 +17,23 @@ import {
 import UserMenu from './auth/UserMenu';
 import { ROUTES, pageIdToPath } from '../lib/routes';
 
-const NAV_ITEMS = [
+import { ChevronDown } from 'lucide-react';
+
+const PRIMARY_NAV_ITEMS = [
   { path: ROUTES.home, label: 'Home', icon: Film, end: true },
   { path: ROUTES.search, label: 'Search', icon: Search },
   { path: ROUTES.watchlist, label: 'Watchlist', icon: Bookmark },
+  { path: ROUTES.ai, label: 'AI Recs', icon: Sparkles },
+  { path: ROUTES.profile, label: 'Profile', icon: User },
+];
+
+const SECONDARY_NAV_ITEMS = [
   { path: ROUTES.reviews, label: 'Reviews', icon: Star },
   { path: ROUTES.leaderboard, label: 'Leaderboard', icon: Trophy },
-  { path: ROUTES.ai, label: 'AI Recs', icon: Sparkles },
   { path: ROUTES.wrapped, label: 'Wrapped', icon: Sparkles },
-  { path: ROUTES.profile, label: 'Profile', icon: User },
   { path: ROUTES.about, label: 'About', icon: Info },
   { path: ROUTES.contact, label: 'Contact', icon: Mail },
-  { path: ROUTES.report, label: 'Report', icon: AlertTriangle }
+  { path: ROUTES.report, label: 'Report', icon: AlertTriangle },
 ];
 
 const navLinkClass = ({ isActive }) =>
@@ -45,12 +50,16 @@ const mobileNavLinkClass = ({ isActive }) =>
 
 export default function Navbar({ onOpenAuth }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleUserMenuNavigate = (pageId) => {
     navigate(pageIdToPath(pageId));
     setIsOpen(false);
+    setIsMoreOpen(false);
   };
+
+
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-dark-border bg-dark-bg/85 backdrop-blur-md">
@@ -74,7 +83,7 @@ export default function Navbar({ onOpenAuth }) {
             className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-5 overflow-x-auto scrollbar-none min-w-0"
             style={{ scrollbarWidth: 'none' }}
           >
-            {NAV_ITEMS.map((item) => {
+            {PRIMARY_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
@@ -88,6 +97,36 @@ export default function Navbar({ onOpenAuth }) {
                 </NavLink>
               );
             })}
+            {/* More dropdown */}
+            <div className="relative" onMouseLeave={() => setIsMoreOpen(false)}>
+              <button
+                type="button"
+                onClick={() => setIsMoreOpen(!isMoreOpen)}
+                className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-brand-gold focus:outline-none"
+              >
+                More <ChevronDown className="h-4 w-4" />
+              </button>
+              {isMoreOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-md bg-dark-bg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div className="py-1">
+                    {SECONDARY_NAV_ITEMS.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={item.path}
+                          end={item.end}
+                          className={navLinkClass}
+                        >
+                          <Icon className="h-4 w-4 mr-2 inline" />
+                          {item.label}
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="hidden lg:flex shrink-0 items-center">
@@ -110,7 +149,8 @@ export default function Navbar({ onOpenAuth }) {
 
       {isOpen && (
         <div className="lg:hidden border-t border-dark-border bg-dark-bg px-2 pt-2 pb-4 space-y-1 max-h-[70vh] overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
+          {/* Primary items */}
+          {PRIMARY_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
@@ -125,6 +165,34 @@ export default function Navbar({ onOpenAuth }) {
               </NavLink>
             );
           })}
+          {/* More toggle for secondary items */}
+          <button
+            type="button"
+            onClick={() => setIsMoreOpen(!isMoreOpen)}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-gray-300 hover:bg-dark-hover hover:text-white"
+          >
+            <ChevronDown className="h-5 w-5" />
+            More
+          </button>
+          {isMoreOpen && (
+            <div className="border-t border-dark-border">
+              {SECONDARY_NAV_ITEMS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.end}
+                    className={mobileNavLinkClass}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </NavLink>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </nav>
