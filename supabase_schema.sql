@@ -352,10 +352,28 @@ CREATE POLICY "comments_update" ON comments FOR UPDATE USING (auth.uid() = user_
 CREATE POLICY "comments_delete" ON comments FOR DELETE USING (auth.uid() = user_id);
 
 -- ────────────────────────────────────────────────────────────
+-- 11. FEEDBACK
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS feedback (
+  id          BIGINT      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  rating      INTEGER,
+  message     TEXT        NOT NULL,
+  email       TEXT,
+  user_id     UUID        REFERENCES auth.users(id) ON DELETE SET NULL,
+  username    TEXT,
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "feedback_insert" ON feedback;
+CREATE POLICY "feedback_insert" ON feedback FOR INSERT WITH CHECK (true);
+
+-- ────────────────────────────────────────────────────────────
 -- DONE ✓
 -- ────────────────────────────────────────────────────────────
 -- Tables created: profiles, watchlist, watched_movies, reviews,
---   ratings, favorites, lists, list_items, review_likes, comments
+--   ratings, favorites, lists, list_items, review_likes, comments, feedback
 -- RLS enabled on all tables
 -- Trigger: auto-creates profile row on signup
 -- ────────────────────────────────────────────────────────────
