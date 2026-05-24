@@ -10,6 +10,9 @@ export default function FloatingAiButton({
   watched,
   userReviews,
   onSignInClick,
+  onCardClick,
+  onWatchlistToggle,
+  onWatchedToggle,
   hidden = false,
 }) {
   const [open, setOpen] = useState(false)
@@ -58,6 +61,12 @@ export default function FloatingAiButton({
                 watched={watched}
                 userReviews={userReviews}
                 onSignInClick={onSignInClick}
+                onCardClick={(id) => {
+                  onCardClick?.(id)
+                  setOpen(false) // Close popover when navigated
+                }}
+                onWatchlistToggle={onWatchlistToggle}
+                onWatchedToggle={onWatchedToggle}
                 className="border-0 rounded-none h-full"
               />
             </div>

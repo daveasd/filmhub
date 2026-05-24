@@ -11,6 +11,9 @@ export default function AiRecommendationsPage({
   isLoggedIn = false,
   username = 'Guest',
   onSignInClick,
+  onCardClick,
+  onWatchlistToggle,
+  onWatchedToggle,
 }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 min-h-screen bg-dark-bg text-left">
@@ -85,6 +88,9 @@ export default function AiRecommendationsPage({
             userReviews={userReviews}
             favorites={favorites}
             onSignInClick={onSignInClick}
+            onCardClick={onCardClick}
+            onWatchlistToggle={onWatchlistToggle}
+            onWatchedToggle={onWatchedToggle}
           />
         </div>
       </div>

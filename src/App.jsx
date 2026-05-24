@@ -508,6 +508,9 @@ export default function App() {
                 isLoggedIn={Boolean(user && !user.isGuest)}
                 username={user?.username ?? profile?.username ?? 'Guest'}
                 onSignInClick={() => setShowAuth(true)}
+                onCardClick={handleCardClick}
+                onWatchlistToggle={handleWatchlistToggle}
+                onWatchedToggle={handleWatchedToggle}
               />
             }
           />
@@ -541,6 +544,9 @@ export default function App() {
         watched={watched}
         userReviews={userReviews}
         onSignInClick={() => setShowAuth(true)}
+        onCardClick={handleCardClick}
+        onWatchlistToggle={handleWatchlistToggle}
+        onWatchedToggle={handleWatchedToggle}
       />
 
       {quickViewMovie && (
