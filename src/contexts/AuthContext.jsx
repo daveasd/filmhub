@@ -141,6 +141,36 @@ export function AuthProvider({ children }) {
     return { data, error: null }
   }, [])
 
+  // ── Sign In with Google ─────────────────────────────────────────────────────
+  const signInWithGoogle = useCallback(async () => {
+    if (!supabase) {
+      return {
+        error: {
+          message: mapAuthError({ message: 'Supabase not configured' }),
+        },
+      }
+    }
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: getAuthRedirectUrl(),
+      },
+    })
+
+    if (error) {
+      return {
+        data,
+        error: {
+          message: mapAuthError(error),
+          raw: error,
+        },
+      }
+    }
+
+    return { data, error: null }
+  }, [])
+
   // ── Resend confirmation email ───────────────────────────────────────────────
   const resendConfirmationEmail = useCallback(async (email) => {
     if (!supabase) {
@@ -245,6 +275,7 @@ export function AuthProvider({ children }) {
     isLoggedIn: Boolean(user),
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     continueAsGuest,
     updateProfile,
