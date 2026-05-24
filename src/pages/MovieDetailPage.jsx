@@ -9,6 +9,7 @@ import {
   toggleReviewLike,
 } from '../utils/reviewLikes';
 import { getMovieId } from '../utils/movies';
+import { useRating } from '../hooks/useData';
 
 // Placeholder images for missing assets
 const PLACEHOLDER_PROFILE = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120';
@@ -29,6 +30,7 @@ export default function MovieDetailPage({
   onUpdateReview,
   onQuickView,
 }) {
+  const { rating: personalRating, setRating: setPersonalRating } = useRating(movieId, user);
   const [movie, setMovie] = useState(null);
   const [credits, setCredits] = useState({ cast: [] });
   const [videos, setVideos] = useState({ results: [] });
@@ -267,6 +269,55 @@ export default function MovieDetailPage({
                 <Eye className={`h-4 w-4 ${inWatched ? 'fill-brand-red' : ''}`} />
                 {inWatched ? 'Watched' : 'Mark Seen'}
               </button>
+            </div>
+
+            {/* 1-10 Personal Rating Widget */}
+            <div className="glassmorphism mt-6 p-4 rounded-xl text-center space-y-3 shadow-lg border border-white/10 relative group/rating overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-brand-gold/5 to-transparent opacity-0 group-hover/rating:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="flex justify-between items-center px-1">
+                <span className="text-xs font-black uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 text-brand-gold fill-brand-gold drop-shadow-[0_0_4px_rgba(234,179,8,0.4)]" />
+                  Personal Rating
+                </span>
+                {personalRating !== null && (
+                  <button
+                    onClick={() => setPersonalRating(null)}
+                    className="text-[10px] text-gray-500 hover:text-brand-red font-bold transition-colors uppercase tracking-wider"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              
+              <div className="flex justify-between gap-1">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
+                  const isActive = personalRating !== null && num <= personalRating;
+                  return (
+                    <button
+                      key={num}
+                      onClick={() => setPersonalRating(num)}
+                      className={`flex-1 aspect-square flex items-center justify-center text-[10px] sm:text-xs font-extrabold rounded-lg border transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? 'bg-brand-gold text-black border-brand-gold shadow-[0_0_10px_rgba(234,179,8,0.4)] scale-105 font-black'
+                          : 'bg-dark-bg/50 border-dark-border text-gray-400 hover:border-brand-gold/50 hover:text-brand-gold hover:scale-105'
+                      }`}
+                      title={`Rate ${num}/10`}
+                    >
+                      {num}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {personalRating !== null ? (
+                <p className="text-[11px] text-brand-gold font-bold animate-fade-in">
+                  You rated this {personalRating}/10
+                </p>
+              ) : (
+                <p className="text-[11px] text-gray-500 italic">
+                  Not rated yet. Click a number to rate!
+                </p>
+              )}
             </div>
           </div>
 

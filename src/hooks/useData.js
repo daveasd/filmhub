@@ -15,7 +15,7 @@ import {
   getWatchedMovies, markAsWatched,      unmarkAsWatched,
   getFavorites,     addToFavorites,     removeFromFavorites,
   getMyReviews,     submitReview,       deleteReview,
-  getUserRating,    setUserRating,
+  getUserRating,    setUserRating,      deleteUserRating,
   getUserStats,
   getReviewsForMovie,
 } from '../services/dataService'
@@ -189,8 +189,13 @@ export function useRating(movieId, user) {
   }, [movieId, userId])
 
   const setRating = useCallback(async (value) => {
-    await setUserRating(movieId, value, userId)
-    setRatingState(value)
+    if (value === null) {
+      await deleteUserRating(movieId, userId)
+      setRatingState(null)
+    } else {
+      await setUserRating(movieId, value, userId)
+      setRatingState(value)
+    }
   }, [movieId, userId])
 
   return { rating, setRating }

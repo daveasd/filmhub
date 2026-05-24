@@ -390,7 +390,7 @@ export async function getUserStats(userId) {
       supabase.from('watchlist').select('id', { count: 'exact' }).eq('user_id', userId),
       supabase.from('watched_movies').select('id', { count: 'exact' }).eq('user_id', userId),
       supabase.from('reviews').select('rating').eq('author_id', userId),
-      supabase.from('ratings').select('rating').eq('user_id', userId),
+      supabase.from('ratings').select('movie_id, rating').eq('user_id', userId),
       supabase.from('favorites').select('id', { count: 'exact' }).eq('user_id', userId),
     ])
 
@@ -399,12 +399,31 @@ export async function getUserStats(userId) {
       ? (reviews.reduce((s, r) => s + (r.rating ?? 0), 0) / reviews.length).toFixed(1)
       : null
 
+    const ratings   = ratingsRes.data ?? []
+    const ratingsCount = ratings.length
+    const avgRating10 = ratingsCount
+      ? (ratings.reduce((s, r) => s + (r.rating ?? 0), 0) / ratingsCount).toFixed(1)
+      : null
+
+    let highestRatedMovieId = null;
+    let highestRatingVal = 0;
+    ratings.forEach(r => {
+      if (r.rating > highestRatingVal) {
+        highestRatingVal = r.rating;
+        highestRatedMovieId = r.movie_id;
+      }
+    });
+
     return {
       watchlistCount:  watchlistRes.count  ?? 0,
       watchedCount:    watchedRes.count    ?? 0,
       reviewCount:     reviews.length,
       avgRating,
       favoritesCount:  favoritesRes.count  ?? 0,
+      ratingsCount,
+      avgRating10,
+      highestRatedMovieId,
+      highestRatingVal,
     }
   }
 
@@ -413,11 +432,43 @@ export async function getUserStats(userId) {
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + (r.rating ?? 0), 0) / reviews.length).toFixed(1)
     : null
+
+  const ratings = ls.get(LS_KEYS.ratings)
+  const ratingsCount = ratings.length
+  const avgRating10 = ratingsCount
+    ? (ratings.reduce((s, r) => s + (r.rating ?? 0), 0) / ratingsCount).toFixed(1)
+    : null
+
+  let highestRatedMovieId = null;
+  let highestRatingVal = 0;
+  ratings.forEach(r => {
+    if (r.rating > highestRatingVal) {
+      highestRatingVal = r.rating;
+      highestRatedMovieId = r.movie_id;
+    }
+  });
+
   return {
     watchlistCount: ls.get(LS_KEYS.watchlist).length,
     watchedCount:   ls.get(LS_KEYS.watched).length,
     reviewCount:    reviews.length,
     avgRating,
     favoritesCount: ls.get(LS_KEYS.favorites).length,
+    ratingsCount,
+    avgRating10,
+    highestRatedMovieId,
+    highestRatingVal,
   }
+}
+
+export async function getUserRatings(userId) {
+  if (userId && supabase) {
+    const { data, error } = await supabase
+      .from('ratings')
+      .select('*')
+      .eq('user_id', userId)
+    if (error) console.error('getUserRatings:', error)
+    return data ?? []
+  }
+  return ls.get(LS_KEYS.ratings)
 }

@@ -14,11 +14,12 @@ import {
 import { askFilmHubAi, buildAiContext } from '../../services/aiService.js'
 import { searchMovies } from '../../services/tmdb.js'
 import { getMovieId } from '../../utils/movies.js'
+import { calculateTasteDNA } from '../../utils/forYou.js'
 
 const QUICK_PROMPTS = [
+  'Recommend based on my Taste DNA',
   'What should I watch tonight?',
   'Recommend something like Inception',
-  'I feel bored',
   'Give me a 90-minute thriller',
 ]
 
@@ -55,7 +56,34 @@ export default function AiAssistant({
 
     setError('')
     setInput('')
-    setMessages((prev) => [...prev, { role: 'user', content: question }])
+
+    let userMessageText = question
+    let systemAugmentedText = question
+
+    if (question === 'Recommend based on my Taste DNA') {
+      if (tasteCount < 5) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'user', content: question },
+          {
+            role: 'assistant',
+            content: "I'd love to recommend movies based on your Taste DNA! However, your library is a bit light. Please save, watch, or rate at least 5 movies first so I can analyze your unique taste pattern and make premium, personalized recommendations.",
+          },
+        ])
+        return
+      }
+
+      // Calculate Taste DNA
+      const dna = calculateTasteDNA(watchlist, watched, [])
+      userMessageText = 'Recommend movies based on my Taste DNA'
+      systemAugmentedText = `Recommend movies based on my Taste DNA. Here is my profile analysis:
+Personality Title: ${dna.title}
+Top Genres: ${dna.genres.map((g) => `${g.name} (${g.percentage}%)`).join(', ')}
+Brief description of my taste: "${dna.explanation}"
+Please provide 3 highly customized movie recommendations that perfectly match this Taste DNA!`
+    }
+
+    setMessages((prev) => [...prev, { role: 'user', content: userMessageText }])
     setLoading(true)
 
     try {
@@ -69,7 +97,10 @@ export default function AiAssistant({
         favorites,
       })
 
-      const { reply, source } = await askFilmHubAi({ message: question, context })
+      const { reply, source } = await askFilmHubAi({
+        message: systemAugmentedText,
+        context,
+      })
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: reply, source },
