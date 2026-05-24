@@ -17,6 +17,8 @@ import ReportPage from './pages/ReportPage';
 import FeedbackPage from './pages/FeedbackPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import LeaderboardPage from './pages/LeaderboardPage';
+import PublicProfilePage from './pages/PublicProfilePage';
 import { MOCK_REVIEWS } from './services/mockData';
 import { getMovieVideos } from './services/tmdb';
 import { supabase } from './lib/supabase';
@@ -523,6 +525,8 @@ export default function App() {
             <Route path="/feedback" element={<FeedbackPage user={user} />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/u/:username" element={<PublicProfilePage />} />
             <Route
               path="*"
               element={

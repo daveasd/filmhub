@@ -15,6 +15,8 @@ export const ROUTES = {
   privacy: '/privacy',
   terms: '/terms',
   movie: (id) => `/movie/${id}`,
+  leaderboard: '/leaderboard',
+  publicProfile: (username) => `/u/${username}`,
 };
 
 /** Legacy page ids used in a few callbacks → path */

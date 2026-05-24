@@ -35,6 +35,8 @@ const LS_KEYS = {
   reviews:        'filmhub_reviews',
   ratings:        'filmhub_ratings',
   favorites:      'filmhub_favorites',
+  likes:          'filmhub_review_likes',
+  comments:       'filmhub_comments',
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -471,4 +473,252 @@ export async function getUserRatings(userId) {
     return data ?? []
   }
   return ls.get(LS_KEYS.ratings)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REVIEW LIKES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getReviewLikesCount(reviewId) {
+  if (supabase) {
+    const { count, error } = await supabase
+      .from('review_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('review_id', reviewId)
+    if (error) console.error('getReviewLikesCount:', error)
+    return count ?? 0
+  }
+  const likes = ls.get(LS_KEYS.likes)
+  return likes.filter(l => l.review_id === reviewId).length
+}
+
+export async function hasUserLikedReview(reviewId, userId) {
+  if (userId && supabase) {
+    const { data } = await supabase
+      .from('review_likes')
+      .select('id')
+      .eq('review_id', reviewId)
+      .eq('user_id', userId)
+      .maybeSingle()
+    return Boolean(data)
+  }
+  const likes = ls.get(LS_KEYS.likes)
+  return likes.some(l => l.review_id === reviewId && l.user_id === 'guest')
+}
+
+export async function likeReview(reviewId, userId) {
+  if (userId && supabase) {
+    const { error } = await supabase
+      .from('review_likes')
+      .insert({ review_id: reviewId, user_id: userId })
+    if (error && error.code !== '23505') console.error('likeReview:', error)
+    return !error
+  }
+  const likes = ls.get(LS_KEYS.likes)
+  if (!likes.some(l => l.review_id === reviewId && l.user_id === 'guest')) {
+    ls.set(LS_KEYS.likes, [...likes, { review_id: reviewId, user_id: 'guest', created_at: new Date().toISOString() }])
+  }
+  return true
+}
+
+export async function unlikeReview(reviewId, userId) {
+  if (userId && supabase) {
+    const { error } = await supabase
+      .from('review_likes')
+      .delete()
+      .eq('review_id', reviewId)
+      .eq('user_id', userId)
+    if (error) console.error('unlikeReview:', error)
+    return !error
+  }
+  const likes = ls.get(LS_KEYS.likes)
+  ls.set(LS_KEYS.likes, likes.filter(l => !(l.review_id === reviewId && l.user_id === 'guest')))
+  return true
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getReviewComments(reviewId) {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('comments')
+      .select('*, profiles(username, avatar_url)')
+      .eq('review_id', reviewId)
+      .order('created_at', { ascending: true })
+    if (error) console.error('getReviewComments:', error)
+    return (data ?? []).map(c => ({
+      ...c,
+      author: c.profiles?.username ?? 'User',
+      avatar_url: c.profiles?.avatar_url
+    }))
+  }
+  const comments = ls.get(LS_KEYS.comments)
+  return comments.filter(c => c.review_id === reviewId)
+}
+
+export async function addReviewComment(reviewId, content, user) {
+  if (user && !user.isGuest && supabase) {
+    const { error } = await supabase
+      .from('comments')
+      .insert({
+        review_id: reviewId,
+        user_id: user.id,
+        content
+      })
+    if (error) console.error('addReviewComment:', error)
+    return !error
+  }
+  const comments = ls.get(LS_KEYS.comments)
+  const newComment = {
+    id: Date.now(),
+    review_id: reviewId,
+    user_id: 'guest',
+    author: user?.username ?? 'Guest',
+    content,
+    created_at: new Date().toISOString()
+  }
+  ls.set(LS_KEYS.comments, [...comments, newComment])
+  return true
+}
+
+export async function deleteReviewComment(commentId, userId) {
+  if (userId && supabase) {
+    const { error } = await supabase
+      .from('comments')
+      .delete()
+      .eq('id', commentId)
+      .eq('user_id', userId)
+    if (error) console.error('deleteReviewComment:', error)
+    return !error
+  }
+  const comments = ls.get(LS_KEYS.comments)
+  ls.set(LS_KEYS.comments, comments.filter(c => c.id !== commentId))
+  return true
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LEADERBOARD & SOCIAL PUBLIC LOOKUPS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getLeaderboardData() {
+  if (supabase) {
+    const { data: rawProfiles, error: profErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('is_public', true)
+    
+    if (profErr) {
+      console.error('getLeaderboardData profiles:', profErr)
+      return []
+    }
+
+    const profiles = rawProfiles ?? []
+    if (profiles.length === 0) return []
+
+    const [watchlistRes, watchedRes, reviewsRes, ratingsRes] = await Promise.all([
+      supabase.from('watchlist').select('user_id'),
+      supabase.from('watched_movies').select('user_id'),
+      supabase.from('reviews').select('author_id, rating'),
+      supabase.from('ratings').select('user_id, rating')
+    ])
+
+    const wl = watchlistRes.data ?? []
+    const wm = watchedRes.data ?? []
+    const revs = reviewsRes.data ?? []
+    const rats = ratingsRes.data ?? []
+
+    return profiles.map(p => {
+      const pWl = wl.filter(item => item.user_id === p.id).length
+      const pWm = wm.filter(item => item.user_id === p.id).length
+      const pRevs = revs.filter(item => item.author_id === p.id).length
+      const pRats = rats.filter(item => item.user_id === p.id).length
+
+      const userRevs = revs.filter(item => item.author_id === p.id)
+      const avgReviewRating = userRevs.length 
+        ? (userRevs.reduce((s, r) => s + (r.rating ?? 0), 0) / userRevs.length).toFixed(1)
+        : null
+
+      return {
+        id: p.id,
+        username: p.username,
+        avatar_url: p.avatar_url,
+        watchlistCount: pWl,
+        watchedCount: pWm,
+        reviewCount: pRevs,
+        ratingCount: pRats,
+        avgReviewRating,
+        totalActions: pWl + pWm + pRevs + pRats
+      }
+    })
+  }
+
+  const guestReviews = ls.get(LS_KEYS.reviews)
+  const guestWl = ls.get(LS_KEYS.watchlist)
+  const guestWm = ls.get(LS_KEYS.watched)
+  const guestRats = ls.get(LS_KEYS.ratings)
+  
+  return [
+    {
+      id: 'guest_id',
+      username: 'Guest User',
+      avatar_url: null,
+      watchlistCount: guestWl.length,
+      watchedCount: guestWm.length,
+      reviewCount: guestReviews.length,
+      ratingCount: guestRats.length,
+      avgReviewRating: guestReviews.length ? (guestReviews.reduce((s, r) => s + (r.rating ?? 0), 0) / guestReviews.length).toFixed(1) : null,
+      totalActions: guestWl.length + guestWm.length + guestReviews.length + guestRats.length
+    }
+  ]
+}
+
+export async function getPublicProfileByUsername(username) {
+  if (!username) return null
+  
+  if (supabase) {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('username', username)
+      .maybeSingle()
+
+    if (error || !profile) return null
+
+    if (profile.is_public === false) {
+      return { profile, isPrivate: true }
+    }
+
+    const [watchlistRes, watchedRes, reviewsRes, ratingsRes, favoritesRes] = await Promise.all([
+      supabase.from('watchlist').select('*').eq('user_id', profile.id),
+      supabase.from('watched_movies').select('*').eq('user_id', profile.id),
+      supabase.from('reviews').select('*').eq('author_id', profile.id),
+      supabase.from('ratings').select('*').eq('user_id', profile.id),
+      supabase.from('favorites').select('*').eq('user_id', profile.id)
+    ])
+
+    return {
+      profile,
+      isPrivate: false,
+      watchlist: watchlistRes.data ?? [],
+      watched: watchedRes.data ?? [],
+      reviews: reviewsRes.data ?? [],
+      ratings: ratingsRes.data ?? [],
+      favorites: favoritesRes.data ?? []
+    }
+  }
+
+  if (username.toLowerCase() === 'guest') {
+    return {
+      profile: { username: 'Guest', avatar_url: null, is_public: true },
+      isPrivate: false,
+      watchlist: ls.get(LS_KEYS.watchlist),
+      watched: ls.get(LS_KEYS.watched),
+      reviews: ls.get(LS_KEYS.reviews),
+      ratings: ls.get(LS_KEYS.ratings),
+      favorites: ls.get(LS_KEYS.favorites)
+    }
+  }
+  return null
 }

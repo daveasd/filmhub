@@ -6,6 +6,7 @@ import { getUserRatings } from '../services/dataService';
 import { getMovieDetails, getTrendingMovies, getPopularMovies, getTopRatedMovies } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { getMovieId } from '../utils/movies';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfilePage({
   user,
@@ -14,6 +15,8 @@ export default function ProfilePage({
   userReviews = [],
 }) {
   const navigate = useNavigate();
+  const { profile, updateProfile } = useAuth();
+  const [copyLinkFeedback, setCopyLinkFeedback] = useState(false);
   const currentUserReviews = userReviews.filter((r) => r.author === user?.username);
 
   // Compute stats from props
@@ -214,6 +217,59 @@ export default function ProfilePage({
               </div>
             )}
           </div>
+
+          {/* Privacy settings */}
+          {!user?.isGuest && (
+            <div className="glassmorphism rounded-xl p-5 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-dark-border/50 pb-2">
+                Privacy & Sharing
+              </h3>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-300 font-semibold">Make my profile public</span>
+                <button
+                  onClick={async () => {
+                    const currentVal = profile?.is_public ?? true;
+                    await updateProfile({ is_public: !currentVal });
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    (profile?.is_public ?? true) ? 'bg-violet-600' : 'bg-gray-700'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      (profile?.is_public ?? true) ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              <p className="text-[10px] text-gray-500 italic leading-normal">
+                If public, others can view your FilmHub Taste DNA, stats, and text reviews at `/u/{profile?.username ?? user?.username}`.
+              </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    const username = profile?.username ?? user?.username;
+                    if (!username) {
+                      alert("Set a username first to share your profile.");
+                      return;
+                    }
+                    const origin = window.location.origin;
+                    const link = `${origin}/u/${username}`;
+                    navigator.clipboard.writeText(link);
+                    setCopyLinkFeedback(true);
+                    setTimeout(() => setCopyLinkFeedback(false), 2000);
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-dark-card border border-dark-border px-3.5 py-2 text-xs font-bold text-gray-300 hover:border-violet-500/50 hover:text-white transition-all duration-200"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  {copyLinkFeedback ? 'Link Copied!' : 'Copy public profile link'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Stats Column */}

@@ -12,6 +12,7 @@ import {
   Info,
   Mail,
   AlertTriangle,
+  Trophy,
 } from 'lucide-react';
 import UserMenu from './auth/UserMenu';
 import { ROUTES, pageIdToPath } from '../lib/routes';
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { path: ROUTES.search, label: 'Search', icon: Search },
   { path: ROUTES.watchlist, label: 'Watchlist', icon: Bookmark },
   { path: ROUTES.reviews, label: 'Reviews', icon: Star },
+  { path: ROUTES.leaderboard, label: 'Leaderboard', icon: Trophy },
   { path: ROUTES.ai, label: 'AI Recs', icon: Sparkles },
   { path: ROUTES.profile, label: 'Profile', icon: User },
   { path: ROUTES.about, label: 'About', icon: Info },
