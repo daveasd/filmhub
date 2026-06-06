@@ -1,0 +1,146 @@
+{
+  "passed": [
+    {
+      "name": "1. Landing/intro screen",
+      "detail": ""
+    },
+    {
+      "name": "3. Continue to Login",
+      "detail": ""
+    },
+    {
+      "name": "2. Continue as Guest",
+      "detail": ""
+    },
+    {
+      "name": "6. Sign in validation (empty)",
+      "detail": "Auth modal shown"
+    },
+    {
+      "name": "4-5. Sign up validation",
+      "detail": ""
+    },
+    {
+      "name": "6. Home movie loading",
+      "detail": ""
+    },
+    {
+      "name": "7. Mood chips",
+      "detail": ""
+    },
+    {
+      "name": "8. Search movies",
+      "detail": ""
+    },
+    {
+      "name": "9. Movie detail page",
+      "detail": ""
+    },
+    {
+      "name": "11. Add watchlist",
+      "detail": ""
+    },
+    {
+      "name": "11. Remove watchlist",
+      "detail": ""
+    },
+    {
+      "name": "12. Mark watched",
+      "detail": ""
+    },
+    {
+      "name": "13. Reviews page",
+      "detail": ""
+    },
+    {
+      "name": "14. AI Recs page",
+      "detail": ""
+    },
+    {
+      "name": "15. Profile page",
+      "detail": ""
+    },
+    {
+      "name": "16. About",
+      "detail": ""
+    },
+    {
+      "name": "17. Contact",
+      "detail": ""
+    },
+    {
+      "name": "18. Report",
+      "detail": ""
+    },
+    {
+      "name": "19. Feedback",
+      "detail": ""
+    },
+    {
+      "name": "20. Privacy page",
+      "detail": ""
+    },
+    {
+      "name": "21. Terms page",
+      "detail": ""
+    },
+    {
+      "name": "22. Footer/Contact social links",
+      "detail": "GitHub + Telegram visible"
+    },
+    {
+      "name": "18. Report form UI",
+      "detail": "Fields present"
+    },
+    {
+      "name": "27. No horizontal overflow (desktop)",
+      "detail": "OK"
+    },
+    {
+      "name": "26. Broken images",
+      "detail": "count=0"
+    },
+    {
+      "name": "24. Console check",
+      "detail": "clean"
+    },
+    {
+      "name": "25. API failures",
+      "detail": "none critical"
+    },
+    {
+      "name": "28. Email confirmation",
+      "detail": "Not tested live (no test inbox); signup UI + resend link present in code"
+    },
+    {
+      "name": "13. Review CRUD",
+      "detail": "Not automated on production (skipped to avoid spam)"
+    },
+    {
+      "name": "23. Mobile layout",
+      "detail": "horizontal overflow"
+    },
+    {
+      "name": "Cursor glow disabled mobile",
+      "detail": "hidden"
+    }
+  ],
+  "failed": [
+    {
+      "name": "10. Watch trailer",
+      "detail": "Button not found"
+    }
+  ],
+  "bugs": [
+    {
+      "severity": "medium",
+      "title": "Mobile horizontal scroll",
+      "steps": [
+        "iPhone 13"
+      ],
+      "suggestion": "Responsive CSS"
+    }
+  ],
+  "consoleErrors": [],
+  "apiFails": []
+}

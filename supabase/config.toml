@@ -1,0 +1,6 @@
+# Supabase local config (optional — used by Supabase CLI)
+# Deploy functions: supabase functions deploy filmhub-ai --no-verify-jwt
+# Set secret:      supabase secrets set GEMINI_API_KEY=your_key_here
+
+[functions.filmhub-ai]
+verify_jwt = false
