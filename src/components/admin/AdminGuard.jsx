@@ -1,13 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../lib/routes';
 
 export default function AdminGuard({ children, onSignInClick }) {
-  const { user, profile, loading, isGuest, isLoggedIn } = useAuth();
+  const { user, profile, loading, isGuest, isLoggedIn, refetchProfile } = useAuth();
+  const [checkingRole, setCheckingRole] = useState(true);
+  const [resolvedRole, setResolvedRole] = useState(null);
 
-  if (loading) {
+  useEffect(() => {
+    if (loading) return;
+
+    if (isGuest || !isLoggedIn || !user) {
+      setCheckingRole(false);
+      setResolvedRole(null);
+      return;
+    }
+
+    let cancelled = false;
+    setCheckingRole(true);
+
+    refetchProfile()
+      .then((fresh) => {
+        if (!cancelled) {
+          setResolvedRole(fresh?.role ?? profile?.role ?? 'user');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingRole(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, isGuest, isLoggedIn, user, refetchProfile, profile?.role]);
+
+  if (loading || checkingRole) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-400 gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
@@ -46,15 +75,22 @@ export default function AdminGuard({ children, onSignInClick }) {
     );
   }
 
-  if (profile?.role !== 'admin') {
+  const role = resolvedRole ?? profile?.role ?? 'user';
+
+  if (role !== 'admin') {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
-          <p className="text-gray-400 text-sm mb-6">
-            You do not have permission to view the admin dashboard. Contact an administrator if
-            you believe this is an error.
+          <p className="text-gray-400 text-sm mb-2">
+            You are signed in as <span className="text-white">{user.email}</span>, but your
+            account role is <span className="text-brand-gold font-semibold">{role}</span> — not{' '}
+            <span className="text-brand-gold font-semibold">admin</span>.
+          </p>
+          <p className="text-gray-500 text-xs mb-6">
+            Run the Phase 6 SQL in Supabase to set your role to admin, then sign out and sign back
+            in.
           </p>
           <Link
             to={ROUTES.home}

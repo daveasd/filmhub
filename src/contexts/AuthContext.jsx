@@ -32,7 +32,11 @@ export function AuthProvider({ children }) {
       .eq('id', userId)
       .single()
 
-    if (!error && data) setProfile(data)
+    if (!error && data) {
+      setProfile(data)
+      return data
+    }
+    return null
   }, [])
 
   const applySession = useCallback(
@@ -304,7 +308,7 @@ export function AuthProvider({ children }) {
     continueAsGuest,
     updateProfile,
     resendConfirmationEmail,
-    refetchProfile: () => user && fetchProfile(user.id),
+    refetchProfile: () => (user ? fetchProfile(user.id) : Promise.resolve(null)),
     clearUnconfirmedSession,
     resetPasswordForEmail,
     updateUser,
