@@ -58,10 +58,8 @@ export default function App() {
     continueAsGuest,
   } = useAuth();
   const { toast } = useToast();
-  // Basic analytics integration
-  useEffect(() => {
-    logEvent('page_view', { path: location.pathname }, user?.isGuest ? null : user?.id);
-  }, [location.pathname, user]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [showAuth, setShowAuth] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
@@ -69,8 +67,9 @@ export default function App() {
   const [quickViewMovie, setQuickViewMovie] = useState(null);
   const [user, setUser] = useState(null);
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  useEffect(() => {
+    logEvent('page_view', { path: location.pathname }, user?.isGuest ? null : user?.id);
+  }, [location.pathname, user]);
 
   // Watchlist & watched lists
   const [watchlist, setWatchlist] = useState([]);
