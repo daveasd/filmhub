@@ -38,6 +38,7 @@ export const PAGE_TO_PATH = {
   feedback: ROUTES.feedback,
   privacy: ROUTES.privacy,
   terms: ROUTES.terms,
+  admin: ROUTES.admin,
 };
 
 export function pageIdToPath(pageId) {

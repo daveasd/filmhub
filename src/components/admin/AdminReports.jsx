@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import { StaticCard } from '../StaticPageLayout';
 import { useToast } from '../../contexts/ToastContext';
-import { fetchReports, updateReportStatus } from '../../services/adminService';
+import { fetchReports, updateReportStatus, deleteReport } from '../../services/adminService';
+import AdminConfirmModal from './AdminConfirmModal';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
@@ -31,6 +32,8 @@ export default function AdminReports() {
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('');
   const [notesDraft, setNotesDraft] = useState({});
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadReports = async () => {
     setLoading(true);
@@ -67,6 +70,22 @@ export default function AdminReports() {
         r.id === id ? { ...r, status, admin_notes: notes || null } : r,
       ),
     );
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    const { error: deleteError } = await deleteReport(deleteTarget.id);
+    setDeleting(false);
+
+    if (deleteError) {
+      toast(`Failed to delete report: ${deleteError}`, 'error');
+      return;
+    }
+
+    toast('Report deleted', 'success');
+    setReports((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+    setDeleteTarget(null);
   };
 
   return (
@@ -134,11 +153,29 @@ export default function AdminReports() {
                     </option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  onClick={() => setDeleteTarget(report)}
+                  className="text-red-400 hover:text-red-300 p-2 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+                  title="Delete report"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </StaticCard>
           ))}
         </div>
       )}
+
+      <AdminConfirmModal
+        open={Boolean(deleteTarget)}
+        title="Delete report?"
+        message="Permanently delete this report? This cannot be undone."
+        confirmLabel="Delete report"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+      />
     </div>
   );
 }

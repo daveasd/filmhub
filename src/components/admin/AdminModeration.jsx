@@ -5,6 +5,7 @@ import { useToast } from '../../contexts/ToastContext';
 import {
   fetchFeedback,
   updateFeedbackStatus,
+  deleteFeedback,
   fetchReviewsForModeration,
   deleteReview,
 } from '../../services/adminService';
@@ -35,6 +36,8 @@ export default function AdminModeration() {
   const [feedbackFilter, setFeedbackFilter] = useState('unread');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [feedbackDeleteTarget, setFeedbackDeleteTarget] = useState(null);
+  const [feedbackDeleting, setFeedbackDeleting] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -68,6 +71,22 @@ export default function AdminModeration() {
     }
     toast('Feedback updated', 'success');
     setFeedback((prev) => prev.map((f) => (f.id === id ? { ...f, status } : f)));
+  };
+
+  const confirmDeleteFeedback = async () => {
+    if (!feedbackDeleteTarget) return;
+    setFeedbackDeleting(true);
+    const { error: deleteError } = await deleteFeedback(feedbackDeleteTarget.id);
+    setFeedbackDeleting(false);
+
+    if (deleteError) {
+      toast(`Failed to delete feedback: ${deleteError}`, 'error');
+      return;
+    }
+
+    toast('Feedback deleted', 'success');
+    setFeedback((prev) => prev.filter((f) => f.id !== feedbackDeleteTarget.id));
+    setFeedbackDeleteTarget(null);
   };
 
   const confirmDeleteReview = async () => {
@@ -160,17 +179,27 @@ export default function AdminModeration() {
                     {new Date(item.created_at).toLocaleString()}
                   </div>
                 </div>
-                <select
-                  value={item.status ?? 'unread'}
-                  onChange={(e) => handleFeedbackStatus(item.id, e.target.value)}
-                  className="rounded-lg bg-dark-bg border border-dark-border text-white px-3 py-2 text-sm min-h-[40px] shrink-0"
-                >
-                  {FEEDBACK_STATUSES.filter((o) => o.value).map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-2 shrink-0">
+                  <select
+                    value={item.status ?? 'unread'}
+                    onChange={(e) => handleFeedbackStatus(item.id, e.target.value)}
+                    className="rounded-lg bg-dark-bg border border-dark-border text-white px-3 py-2 text-sm min-h-[40px]"
+                  >
+                    {FEEDBACK_STATUSES.filter((o) => o.value).map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackDeleteTarget(item)}
+                    className="text-red-400 hover:text-red-300 p-2 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+                    title="Delete feedback"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </StaticCard>
             ))}
           </div>
@@ -216,6 +245,16 @@ export default function AdminModeration() {
         onConfirm={confirmDeleteReview}
         onCancel={() => setDeleteTarget(null)}
         loading={deleting}
+      />
+
+      <AdminConfirmModal
+        open={Boolean(feedbackDeleteTarget)}
+        title="Delete feedback?"
+        message="Permanently delete this feedback entry? This cannot be undone."
+        confirmLabel="Delete feedback"
+        onConfirm={confirmDeleteFeedback}
+        onCancel={() => setFeedbackDeleteTarget(null)}
+        loading={feedbackDeleting}
       />
     </div>
   );

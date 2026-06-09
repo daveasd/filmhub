@@ -86,6 +86,9 @@ USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
 );
 
+-- (Admin DELETE policies for reports, feedback, and profiles are defined in
+-- section 7 below using the is_admin() helper to avoid RLS recursion.)
+
 -- 6. Add Admin Select Policies for other tables so admin can see stats
 -- Watchlist Admin Select
 DROP POLICY IF EXISTS "watchlist_admin_select" ON watchlist;
@@ -123,3 +126,46 @@ CREATE POLICY "profiles_admin_update" ON profiles FOR UPDATE
 USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
 );
+
+-- ============================================================================
+-- 7. Full admin control: helper + complete DELETE/UPDATE authority
+-- ============================================================================
+
+-- SECURITY DEFINER helper avoids infinite recursion when a profiles policy
+-- needs to check the caller's role against the profiles table itself.
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+-- Admins can delete any profile (removes a user's content via FK cascades)
+DROP POLICY IF EXISTS "profiles_admin_delete" ON profiles;
+CREATE POLICY "profiles_admin_delete" ON profiles FOR DELETE
+USING (auth.uid() = id OR public.is_admin());
+
+-- Admins can delete reports
+DROP POLICY IF EXISTS "reports_admin_delete" ON reports;
+CREATE POLICY "reports_admin_delete" ON reports FOR DELETE
+USING (public.is_admin());
+
+-- Admins can delete feedback
+DROP POLICY IF EXISTS "feedback_admin_delete" ON feedback;
+CREATE POLICY "feedback_admin_delete" ON feedback FOR DELETE
+USING (public.is_admin());
+
+-- Admins can update any review (in addition to existing admin delete)
+DROP POLICY IF EXISTS "reviews_admin_update" ON reviews;
+CREATE POLICY "reviews_admin_update" ON reviews FOR UPDATE
+USING (public.is_admin());
+
+-- Admins can delete analytics events (housekeeping)
+DROP POLICY IF EXISTS "analytics_admin_delete" ON analytics_events;
+CREATE POLICY "analytics_admin_delete" ON analytics_events FOR DELETE
+USING (public.is_admin());

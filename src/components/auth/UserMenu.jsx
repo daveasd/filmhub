@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { User, LogOut, Star, Bookmark, Eye, Heart, ChevronDown } from 'lucide-react'
+import { User, LogOut, Star, Bookmark, Eye, Heart, ChevronDown, Shield } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 
 /**
@@ -117,6 +117,19 @@ export default function UserMenu({ onOpenAuth, onNavigate }) {
               </button>
             ))}
           </div>
+
+          {/* Admin link (admins only) */}
+          {profile?.role === 'admin' && (
+            <div className="border-t border-white/10 py-1">
+              <button
+                onClick={() => { onNavigate?.('admin'); setOpen(false) }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-brand-gold hover:text-brand-gold hover:bg-brand-gold/10 text-sm font-semibold transition-colors text-left"
+              >
+                <Shield size={15} />
+                Admin Dashboard
+              </button>
+            </div>
+          )}
 
           {/* Sign out */}
           <div className="border-t border-white/10 py-1">

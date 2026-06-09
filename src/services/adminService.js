@@ -111,6 +111,16 @@ export async function updateUserRole(userId, role) {
   }
 }
 
+export async function deleteUser(userId) {
+  if (!supabase) return { error: 'Supabase not configured' };
+  try {
+    const { error } = await supabase.from('profiles').delete().eq('id', userId);
+    return { error: error?.message ?? null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 export async function fetchReports({ status = '' } = {}) {
   const options = {
     order: { column: 'created_at', ascending: false },
@@ -132,6 +142,16 @@ export async function updateReportStatus(id, status, adminNotes = null) {
   }
 }
 
+export async function deleteReport(id) {
+  if (!supabase) return { error: 'Supabase not configured' };
+  try {
+    const { error } = await supabase.from('reports').delete().eq('id', id);
+    return { error: error?.message ?? null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 export async function fetchFeedback({ status = '' } = {}) {
   const options = {
     order: { column: 'created_at', ascending: false },
@@ -145,6 +165,16 @@ export async function updateFeedbackStatus(id, status) {
   if (!supabase) return { error: 'Supabase not configured' };
   try {
     const { error } = await supabase.from('feedback').update({ status }).eq('id', id);
+    return { error: error?.message ?? null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+export async function deleteFeedback(id) {
+  if (!supabase) return { error: 'Supabase not configured' };
+  try {
+    const { error } = await supabase.from('feedback').delete().eq('id', id);
     return { error: error?.message ?? null };
   } catch (err) {
     return { error: err.message };

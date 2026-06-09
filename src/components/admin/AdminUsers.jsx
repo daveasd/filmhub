@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Trash2 } from 'lucide-react';
 import { StaticCard } from '../StaticPageLayout';
 import { useToast } from '../../contexts/ToastContext';
-import { fetchUsers, updateUserRole } from '../../services/adminService';
+import { fetchUsers, updateUserRole, deleteUser } from '../../services/adminService';
 import AdminConfirmModal from './AdminConfirmModal';
 
 const ROLES = ['', 'user', 'admin'];
@@ -16,6 +16,8 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState('');
   const [pendingRoleChange, setPendingRoleChange] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -60,6 +62,22 @@ export default function AdminUsers() {
       prev.map((u) => (u.id === user.id ? { ...u, role: newRole } : u)),
     );
     setPendingRoleChange(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    const { error: deleteError } = await deleteUser(deleteTarget.id);
+    setDeleting(false);
+
+    if (deleteError) {
+      toast(`Failed to delete user: ${deleteError}`, 'error');
+      return;
+    }
+
+    toast(`@${deleteTarget.username} deleted`, 'success');
+    setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+    setDeleteTarget(null);
   };
 
   return (
@@ -113,17 +131,27 @@ export default function AdminUsers() {
                   {u.is_public ? ' · Public profile' : ' · Private profile'}
                 </p>
               </div>
-              <select
-                value={u.role ?? 'user'}
-                onChange={(e) => handleRoleChangeRequest(u, e.target.value)}
-                className="rounded-lg bg-dark-bg border border-dark-border text-white px-3 py-2 text-sm min-h-[40px] shrink-0"
-              >
-                {ROLES.filter(Boolean).map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2 shrink-0">
+                <select
+                  value={u.role ?? 'user'}
+                  onChange={(e) => handleRoleChangeRequest(u, e.target.value)}
+                  className="rounded-lg bg-dark-bg border border-dark-border text-white px-3 py-2 text-sm min-h-[40px]"
+                >
+                  {ROLES.filter(Boolean).map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setDeleteTarget(u)}
+                  className="text-red-400 hover:text-red-300 p-2 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+                  title="Delete user"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </StaticCard>
           ))}
         </div>
@@ -142,6 +170,20 @@ export default function AdminUsers() {
         onCancel={() => setPendingRoleChange(null)}
         loading={saving}
         danger={pendingRoleChange?.newRole !== 'admin'}
+      />
+
+      <AdminConfirmModal
+        open={Boolean(deleteTarget)}
+        title="Delete user?"
+        message={
+          deleteTarget
+            ? `Permanently delete @${deleteTarget.username}'s profile and all their content? This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete user"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
       />
     </div>
   );
